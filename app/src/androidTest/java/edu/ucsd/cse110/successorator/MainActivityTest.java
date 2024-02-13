@@ -4,8 +4,6 @@ import static androidx.test.core.app.ActivityScenario.launch;
 
 import static junit.framework.TestCase.assertEquals;
 
-import android.content.res.Resources;
-
 import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -31,7 +29,7 @@ public class MainActivityTest {
                 var rootView = activity.findViewById(R.id.root);
                 var binding = ActivityMainBinding.bind(rootView);
 
-                var expected = activity.getString(R.string.hello_world);
+                var expected = activity.getString(R.string.empty_list_greeting);
                 var actual = binding.placeholderText.getText();
 
                 assertEquals(expected, actual);
