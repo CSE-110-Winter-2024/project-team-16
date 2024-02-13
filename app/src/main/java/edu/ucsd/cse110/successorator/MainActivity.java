@@ -1,6 +1,5 @@
 package edu.ucsd.cse110.successorator;
 
-import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -14,7 +13,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         var view = ActivityMainBinding.inflate(getLayoutInflater(), null, false);
-        view.placeholderText.setText(R.string.hello_world);
+        view.placeholderText.setText(R.string.empty_list_greeting);
 
         setContentView(view.getRoot());
     }
