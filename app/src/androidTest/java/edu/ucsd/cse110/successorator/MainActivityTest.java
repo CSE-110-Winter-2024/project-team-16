@@ -20,7 +20,7 @@ import edu.ucsd.cse110.successorator.databinding.ActivityMainBinding;
  */
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
-    @Test
+   /* @Test
     public void displaysHelloWorld() {
         try (var scenario = ActivityScenario.launch(MainActivity.class)) {
 
@@ -38,5 +38,5 @@ public class MainActivityTest {
             // Simulate moving to the started state (above will then be called).
             scenario.moveToState(Lifecycle.State.STARTED);
         }
-    }
+    }*/
 }

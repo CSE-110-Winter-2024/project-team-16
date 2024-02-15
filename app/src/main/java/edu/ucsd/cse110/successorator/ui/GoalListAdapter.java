@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ucsd.cse110.successorator.app.databinding.ListItemGoalBinding;
+import edu.ucsd.cse110.successorator.databinding.ListItemGoalBinding;
 import edu.ucsd.cse110.successorator.lib.domain.Goal;
 
 public class GoalListAdapter extends ArrayAdapter<Goal> {

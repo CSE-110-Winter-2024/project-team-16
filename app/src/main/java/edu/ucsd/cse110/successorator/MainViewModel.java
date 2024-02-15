@@ -1,4 +1,4 @@
-package edu.ucsd.cse110.successorator.app;
+package edu.ucsd.cse110.successorator;
 
 import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY;
 

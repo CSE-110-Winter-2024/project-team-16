@@ -13,8 +13,8 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ucsd.cse110.successorator.app.MainViewModel;
-import edu.ucsd.cse110.successorator.app.databinding.FragmentGoalListBinding;
+import edu.ucsd.cse110.successorator.MainViewModel;
+import edu.ucsd.cse110.successorator.databinding.FragmentGoalListBinding;
 
 public class GoalListFragment extends Fragment {
     private MainViewModel activityModel;

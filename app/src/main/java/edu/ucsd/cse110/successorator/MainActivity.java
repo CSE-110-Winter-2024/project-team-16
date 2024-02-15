@@ -1,4 +1,4 @@
-package edu.ucsd.cse110.successorator.app;
+package edu.ucsd.cse110.successorator;
 
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,9 +11,9 @@ import androidx.appcompat.app.AppCompatActivity;
 //import androidx.fragment.app.Fragment;
 
 //import edu.ucsd.cse110.successorator.app.R;
-import edu.ucsd.cse110.successorator.app.databinding.ActivityMainBinding;
+import edu.ucsd.cse110.successorator.databinding.ActivityMainBinding;
 //import edu.ucsd.cse110.successorator.app.ui.GoalListFragment;
-import edu.ucsd.cse110.successorator.app.ui.dialog.AddGoalDialogFragment;
+import edu.ucsd.cse110.successorator.ui.dialog.AddGoalDialogFragment;
 
 public class MainActivity extends AppCompatActivity {
     @Override

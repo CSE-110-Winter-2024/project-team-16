@@ -1,4 +1,4 @@
-package edu.ucsd.cse110.successorator.app;
+package edu.ucsd.cse110.successorator;
 
 import android.app.Application;
 
