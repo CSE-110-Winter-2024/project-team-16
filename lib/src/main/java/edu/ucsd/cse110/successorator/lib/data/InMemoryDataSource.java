@@ -1,5 +1,7 @@
 package edu.ucsd.cse110.successorator.lib.data;
 
+import java.awt.Font;
+import java.awt.font.TextAttribute;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,15 +95,38 @@ public class InMemoryDataSource {
         allGoalsSubject.setValue(getGoals());
     }
 
+    public void checkOffGoal(int id) {
+        var goal = goals.get(id);
+        goal.toggle();
+        var sortOrder = goal.sortOrder();
+
+
+//        shiftSortOrders(sortOrder, maxSortOrder, -1);
+//
+//        if (goalSubjects.containsKey(id)) {
+//            goalSubjects.get(id).setValue(null);
+//        }
+//        allGoalsSubject.setValue(getGoals());
+    }
+
+    public void shiftSortOrders(int from, int to, int by) {
+        var goalss = goals.values().stream()
+                .filter(goal -> goal.sortOrder() >= from && goal.sortOrder() <= to)
+                .map(goal -> goal.withSortOrder(goal.sortOrder() + by))
+                .collect(Collectors.toList());
+
+        putGoals(goalss);
+    }
+
     private Goal preInsert(Goal goal) {
         var id = goal.id();
         if (id == null) {
-            // If the card has no id, give it one.
+            // If the goal has no id, give it one.
             goal = goal.withId(nextId++);
         }
         else if (id > nextId) {
-            // If the card has an id, update nextId if necessary to avoid giving out the same
-            // one. This is important for when we pre-load cards like in fromDefault().
+            // If the goal has an id, update nextId if necessary to avoid giving out the same
+            // one. This is important for when we pre-load goals like in fromDefault().
             nextId = id + 1;
         }
 
@@ -137,7 +162,6 @@ public class InMemoryDataSource {
         assert sortOrders.stream().allMatch(i -> i >= minSortOrder);
         assert sortOrders.stream().allMatch(i -> i <= maxSortOrder);
     }
-
 
 
 }

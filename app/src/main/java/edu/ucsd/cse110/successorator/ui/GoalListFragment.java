@@ -43,7 +43,7 @@ public class GoalListFragment extends Fragment {
         this.activityModel = modelProvider.get(MainViewModel.class);
 
         // Initialize the Adapter (with an empty list for now)
-        this.adapter = new GoalListAdapter(requireContext(), List.of());
+        this.adapter = new GoalListAdapter(requireContext(), List.of(), activityModel::checkOff);
 /*
         this.adapter = new GoalListAdapter(requireContext(), List.of(), id-> {
             var dialogFragment = ConfirmDeleteCardDialogFragment.newInstance(id);

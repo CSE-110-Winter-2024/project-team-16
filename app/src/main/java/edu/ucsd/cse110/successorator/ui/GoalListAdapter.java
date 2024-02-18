@@ -1,6 +1,7 @@
 package edu.ucsd.cse110.successorator.ui;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,17 +11,18 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import edu.ucsd.cse110.successorator.databinding.ListItemGoalBinding;
 import edu.ucsd.cse110.successorator.lib.domain.Goal;
 
 public class GoalListAdapter extends ArrayAdapter<Goal> {
-    //Consumer<Integer> onDeleteClick;
+    Consumer<Integer> onClick;
 
     public GoalListAdapter(
             Context context,
-            List<Goal> goals
-            //Consumer<Integer> onDeleteClick
+            List<Goal> goals,
+            Consumer<Integer> onClick
     ) {
         // This sets a bunch of stuff internally, which we can access
         // with getContext() and getItem() for example.
@@ -29,15 +31,15 @@ public class GoalListAdapter extends ArrayAdapter<Goal> {
         // or it will crash!
 
         super(context, 0, new ArrayList<>(goals));
-        //this.onDeleteClick = onDeleteClick;
+        this.onClick = onClick;
     }
 
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        // Get the flashcard for this position.
-        var flashcard = getItem(position);
-        assert flashcard != null;
+        // Get the goal for this position.
+        var goal = getItem(position);
+        assert goal != null;
 
         // Check if a view is being reused...
         ListItemGoalBinding binding;
@@ -51,16 +53,21 @@ public class GoalListAdapter extends ArrayAdapter<Goal> {
         }
 
         // Populate the view with the goal's data.
-        binding.goalMitText.setText(flashcard.mit());
-/*
+        binding.goalMitText.setText(goal.mit());
+
+        if(goal.isCrossed) {
+            binding.changeStatus.setPaintFlags(binding.changeStatus.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            binding.changeStatus.setText(goal.mit());
+        }
+
         // Bind the delete button to the callback.
-        binding.cardDeleteButton.setOnClickListener(v-> {
-            var id = flashcard.id();
+        binding.changeStatus.setOnClickListener(v-> {
+            var id = goal.id();
             assert id != null;
-            onDeleteClick.accept(id);
+            onClick.accept(id);
         });
 
- */
         return binding.getRoot();
     }
 

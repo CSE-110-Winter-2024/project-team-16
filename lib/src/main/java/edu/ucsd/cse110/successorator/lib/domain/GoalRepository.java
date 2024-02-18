@@ -33,4 +33,15 @@ public class GoalRepository {
                 goal.withSortOrder(dataSource.getMaxSortOrder() + 1)
         );
     }
+
+    public void prepend(Goal goal) {
+        dataSource.shiftSortOrders(0, dataSource.getMaxSortOrder(), 1);
+        dataSource.putGoal(
+                goal.withSortOrder(dataSource.getMinSortOrder() - 1)
+        );
+    }
+
+    public void checkOff(int id) {
+        dataSource.checkOffGoal(id);
+    }
 }
