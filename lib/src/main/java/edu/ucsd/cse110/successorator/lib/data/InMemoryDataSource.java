@@ -121,8 +121,9 @@ public class InMemoryDataSource {
             goal1.toggle();
             begOfCrossed--;
         } else {
-            removeGoal(id, minSortOrder, sortOrder, 1);
-            putGoal(goal.withSortOrder(minSortOrder));
+            int min = minSortOrder;
+            removeGoal(id, minSortOrder, sortOrder-1, 1);
+            putGoal(goal.withSortOrder(min));
             begOfCrossed++;
         }
 
