@@ -17,6 +17,8 @@ public class InMemoryDataSource {
     private int minSortOrder = Integer.MAX_VALUE;
     private int maxSortOrder = Integer.MIN_VALUE;
 
+    private int begOfCrossed = 2;
+
     private final Map<Integer, Goal> goals
             = new HashMap<>();
     private final Map<Integer, MutableSubject<Goal>> goalSubjects
@@ -95,11 +97,34 @@ public class InMemoryDataSource {
         allGoalsSubject.setValue(getGoals());
     }
 
+    public void removeGoal(int id, int from, int to, int by) {
+        var card = goals.get(id);
+        var sortOrder = card.sortOrder();
+
+        goals.remove(id);
+        shiftSortOrders(from, to, by);
+
+        if (goalSubjects.containsKey(id)) {
+            goalSubjects.get(id).setValue(null);
+        }
+        allGoalsSubject.setValue(getGoals());
+    }
+
     public void checkOffGoal(int id) {
         var goal = goals.get(id);
         goal.toggle();
         var sortOrder = goal.sortOrder();
-
+        if(goal.isCrossed()) {
+            removeGoal(id, sortOrder, begOfCrossed-1, -1);
+            putGoal(goal.withSortOrder(begOfCrossed-1));
+            var goal1 = goals.get(id);
+            goal1.toggle();
+            begOfCrossed--;
+        } else {
+            removeGoal(id, minSortOrder, sortOrder, 1);
+            putGoal(goal.withSortOrder(minSortOrder));
+            begOfCrossed++;
+        }
 
 //        shiftSortOrders(sortOrder, maxSortOrder, -1);
 //
@@ -117,6 +142,19 @@ public class InMemoryDataSource {
 
         putGoals(goalss);
     }
+
+//    public void rotateSortOrders(int from, int to, int by) {
+//        var goalss = goals.values().stream()
+//                .filter(goal -> goal.sortOrder() >= from && goal.sortOrder() <= to)
+//                .map(goal -> goal.withSortOrder(goal.sortOrder() + by))
+//                .collect(Collectors.toList());
+//
+//        if(by < 0) {
+////            Goal g = goals.
+//        }
+//
+//        putGoals(goalss);
+//    }
 
     private Goal preInsert(Goal goal) {
         var id = goal.id();
@@ -161,5 +199,9 @@ public class InMemoryDataSource {
         // Between min and max...
         assert sortOrders.stream().allMatch(i -> i >= minSortOrder);
         assert sortOrders.stream().allMatch(i -> i <= maxSortOrder);
+    }
+
+    public void incrementCrossIndex() {
+        begOfCrossed++;
     }
 }

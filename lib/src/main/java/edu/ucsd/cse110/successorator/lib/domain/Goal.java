@@ -20,7 +20,7 @@ public class Goal implements Serializable {
     private final @Nullable String mit;
     private final @NotNull Integer sortOrder;
 
-    public boolean isCrossed;
+    private boolean isCrossed;
 
 
     public Goal(
@@ -48,6 +48,8 @@ public class Goal implements Serializable {
     public Integer sortOrder() {
         return sortOrder;
     }
+
+    public boolean isCrossed() { return isCrossed; }
 
     public void toggle() { isCrossed = !isCrossed; }
 

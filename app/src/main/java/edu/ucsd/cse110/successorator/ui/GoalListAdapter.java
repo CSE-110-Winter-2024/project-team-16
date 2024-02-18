@@ -55,7 +55,7 @@ public class GoalListAdapter extends ArrayAdapter<Goal> {
         // Populate the view with the goal's data.
         binding.goalMitText.setText(goal.mit());
 
-        if(goal.isCrossed) {
+        if(goal.isCrossed()) {
             binding.changeStatus.setPaintFlags(binding.changeStatus.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         } else {
             binding.changeStatus.setText(goal.mit());

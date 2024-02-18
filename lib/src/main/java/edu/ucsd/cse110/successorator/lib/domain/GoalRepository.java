@@ -32,6 +32,7 @@ public class GoalRepository {
         dataSource.putGoal(
                 goal.withSortOrder(dataSource.getMaxSortOrder() + 1)
         );
+        dataSource.incrementCrossIndex();
     }
 
     public void prepend(Goal goal) {
