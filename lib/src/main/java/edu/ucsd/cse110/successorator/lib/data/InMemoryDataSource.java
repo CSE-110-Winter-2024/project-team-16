@@ -106,7 +106,7 @@ public class InMemoryDataSource {
 //        if (goalSubjects.containsKey(id)) {
 //            goalSubjects.get(id).setValue(null);
 //        }
-//        allGoalsSubject.setValue(getGoals());
+        allGoalsSubject.setValue(getGoals());
     }
 
     public void shiftSortOrders(int from, int to, int by) {
@@ -162,6 +162,4 @@ public class InMemoryDataSource {
         assert sortOrders.stream().allMatch(i -> i >= minSortOrder);
         assert sortOrders.stream().allMatch(i -> i <= maxSortOrder);
     }
-
-
 }

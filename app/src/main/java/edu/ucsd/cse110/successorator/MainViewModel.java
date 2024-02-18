@@ -16,7 +16,6 @@ import edu.ucsd.cse110.successorator.lib.util.MutableSubject;
 import edu.ucsd.cse110.successorator.lib.util.SimpleSubject;
 import edu.ucsd.cse110.successorator.lib.util.Subject;
 
-
 public class MainViewModel extends ViewModel {
     private final GoalRepository goalRepository;
     private final MutableSubject<List<Goal>> orderedGoals;
@@ -47,11 +46,11 @@ public class MainViewModel extends ViewModel {
         goalRepository.findAll().observe(goals -> {
             if (goals == null) return; // not ready yet, ignore, placeholder text should be displayed
 
-            var newOrderedCards = goals.stream()
+            var newOrderedGoals = goals.stream()
                     .sorted(Comparator.comparingInt(Goal::sortOrder))
                     .collect(Collectors.toList());
 
-            orderedGoals.setValue(newOrderedCards);
+            orderedGoals.setValue(newOrderedGoals);
         });
 
     }
@@ -59,7 +58,6 @@ public class MainViewModel extends ViewModel {
     public Subject<List<Goal>> getOrderedGoals() {
         return orderedGoals;
     }
-
 
     public void append(Goal goal) {
         goalRepository.append(goal);

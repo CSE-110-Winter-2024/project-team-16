@@ -59,6 +59,7 @@ public class GoalListAdapter extends ArrayAdapter<Goal> {
             binding.changeStatus.setPaintFlags(binding.changeStatus.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         } else {
             binding.changeStatus.setText(goal.mit());
+            binding.changeStatus.setPaintFlags(binding.changeStatus.getPaintFlags() & ~(Paint.STRIKE_THRU_TEXT_FLAG));
         }
 
         // Bind the delete button to the callback.
