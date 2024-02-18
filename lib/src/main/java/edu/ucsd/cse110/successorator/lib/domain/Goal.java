@@ -58,7 +58,9 @@ public class Goal implements Serializable {
     }
 
     public Goal withSortOrder(int sortOrder) {
-        return new Goal(this.id(), this.mit(), sortOrder);
+        Goal g = new Goal(this.id(), this.mit(), sortOrder);
+        g.isCrossed = this.isCrossed;
+        return g;
     }
 
     @Override

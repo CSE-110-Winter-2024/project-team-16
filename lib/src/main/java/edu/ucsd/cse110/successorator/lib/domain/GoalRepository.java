@@ -29,10 +29,7 @@ public class GoalRepository {
     //public void save(List<Goal> goals) {dataSource.putGoals(goals);}
 
     public void append(Goal goal) {
-        dataSource.putGoal(
-                goal.withSortOrder(dataSource.getMaxSortOrder() + 1)
-        );
-        dataSource.incrementCrossIndex();
+        dataSource.append(goal);
     }
 
     public void prepend(Goal goal) {

@@ -117,8 +117,8 @@ public class InMemoryDataSource {
         if(goal.isCrossed()) {
             removeGoal(id, sortOrder, begOfCrossed-1, -1);
             putGoal(goal.withSortOrder(begOfCrossed-1));
-            var goal1 = goals.get(id);
-            goal1.toggle();
+//            var goal1 = goals.get(id);
+//            goal1.toggle();
             begOfCrossed--;
         } else {
             int min = minSortOrder;
@@ -142,6 +142,12 @@ public class InMemoryDataSource {
                 .collect(Collectors.toList());
 
         putGoals(goalss);
+    }
+
+    public void append(Goal goal) {
+        shiftSortOrders(begOfCrossed, maxSortOrder, 1);
+        putGoal(goal.withSortOrder(begOfCrossed));
+        begOfCrossed++;
     }
 
 //    public void rotateSortOrders(int from, int to, int by) {
@@ -205,4 +211,6 @@ public class InMemoryDataSource {
     public void incrementCrossIndex() {
         begOfCrossed++;
     }
+
+    public int getCrossIndex() { return begOfCrossed; }
 }
