@@ -8,6 +8,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 //import androidx.fragment.app.Fragment;
 
 //import edu.ucsd.cse110.successorator.app.R;
@@ -16,10 +19,12 @@ import edu.ucsd.cse110.successorator.databinding.ActivityMainBinding;
 import edu.ucsd.cse110.successorator.ui.dialog.AddGoalDialogFragment;
 
 public class MainActivity extends AppCompatActivity {
+    private LocalDate localDate;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle("Wednesday 2/14");
+        setDate();
         var view = ActivityMainBinding.inflate(getLayoutInflater(), null, false);
         //view.placeholderText.setText(R.string.empty_list_greeting);
 
@@ -39,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (itemId == R.id.action_bar_menu_add_goal) {
             addGoal();
+        } else if (itemId == R.id.action_bar_increment_date) {
+            incDate();
         }
 
         return super.onOptionsItemSelected(item);
@@ -76,5 +83,60 @@ public class MainActivity extends AppCompatActivity {
 
        // var dialogFragment = AddGoalDialogFragment.newInstance();
         //dialogFragment.show(getParentFragmentManager(), "AddGoalDialogFragment");
+    }
+
+    /**
+     * Set the title as the current date
+     *
+     * @author Yubing Lin
+     */
+    private void setDate() {
+        localDate = LocalDate.now();
+
+        //Format the date as "Weekday MM/DD"
+        formatDate(localDate);
+    }
+
+    /**
+     * Increment the title by one day
+     *
+     * @author Yubing Lin
+     */
+    private void incDate() {
+        localDate = localDate.plusDays(1);
+        formatDate(localDate);
+    }
+
+    /**
+     * Set the date in the format of "Weekday MM/DD"
+     *
+     * @param date the date to be set as title
+     * @author Yubing Lin
+     */
+    private void formatDate(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE M/d");
+        String formattedDate = date.format(formatter);
+        setTitle(formattedDate);
+    }
+
+    /**
+     * Getter for testing
+     *
+     * @return the current localDate that is set as title
+     * @author Yubing Lin
+     */
+    public LocalDate getLocalDate() {
+        return localDate;
+    }
+
+    /**
+     * A public method calling incDate for testing
+     *
+     * @return the current localDate that is set as title
+     * @author Yubing Lin
+     */
+    public LocalDate getIncDate() {
+        incDate();
+        return localDate;
     }
 }
