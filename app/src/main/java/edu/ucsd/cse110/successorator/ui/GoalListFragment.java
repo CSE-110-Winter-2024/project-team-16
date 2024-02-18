@@ -43,7 +43,7 @@ public class GoalListFragment extends Fragment {
         this.activityModel = modelProvider.get(MainViewModel.class);
 
         // Initialize the Adapter (with an empty list for now)
-        this.adapter = new GoalListAdapter(requireContext(), List.of());
+        this.adapter = new GoalListAdapter(requireContext(), List.of(), activityModel::checkOff);
 /*
         this.adapter = new GoalListAdapter(requireContext(), List.of(), id-> {
             var dialogFragment = ConfirmDeleteCardDialogFragment.newInstance(id);
@@ -58,10 +58,6 @@ public class GoalListFragment extends Fragment {
             adapter.addAll(new ArrayList<>(goals)); // remember the mutable copy here!
             adapter.notifyDataSetChanged();
         });//works when I add this!!
-
-
-
-
     }
 
     @Nullable
@@ -72,8 +68,6 @@ public class GoalListFragment extends Fragment {
             // Set the adapter on the ListView
             view.goalList.setAdapter(adapter);
 
-
-
             /*
             //show AddGoalDialogFragment
             //since Plus Button is in the menu, this is not needed here
@@ -83,8 +77,5 @@ public class GoalListFragment extends Fragment {
             });
     */
             return view.getRoot();
-
     }
-
 }
-

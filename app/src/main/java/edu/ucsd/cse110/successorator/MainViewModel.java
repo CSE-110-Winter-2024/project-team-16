@@ -16,12 +16,11 @@ import edu.ucsd.cse110.successorator.lib.util.MutableSubject;
 import edu.ucsd.cse110.successorator.lib.util.SimpleSubject;
 import edu.ucsd.cse110.successorator.lib.util.Subject;
 
-
 public class MainViewModel extends ViewModel {
     private final GoalRepository goalRepository;
     private final MutableSubject<List<Goal>> orderedGoals;
-    //private final MutableSubject<Boolean> isCrossedOff;
-    //private final MutableSubject<String> displayedText;
+    // private final MutableSubject<Boolean> isCrossedOff;
+    // private final MutableSubject<String> displayedText;
 
     public static final ViewModelInitializer<MainViewModel> initializer =
             new ViewModelInitializer<>(
@@ -37,28 +36,22 @@ public class MainViewModel extends ViewModel {
 
         // Create the observable subjects.
         this.orderedGoals = new SimpleSubject<>();
-        //this.isCrossedOff = new SimpleSubject<>();
+        // this.isCrossedOff = new SimpleSubject<>();
         //this.displayedText = new SimpleSubject<>();
 
         // Initialize...
-        //isCrossedOff.setValue(false);
+        // isCrossedOff.setValue(false);
 
         // When the list of cards changes (or is first loaded), reset the ordering.
         goalRepository.findAll().observe(goals -> {
             if (goals == null) return; // not ready yet, ignore, placeholder text should be displayed
 
-            var newOrderedCards = goals.stream()
+            var newOrderedGoals = goals.stream()
                     .sorted(Comparator.comparingInt(Goal::sortOrder))
                     .collect(Collectors.toList());
 
-            orderedGoals.setValue(newOrderedCards);
+            orderedGoals.setValue(newOrderedGoals);
         });
-
-
-
-
-
-
 
     }
 
@@ -66,8 +59,11 @@ public class MainViewModel extends ViewModel {
         return orderedGoals;
     }
 
-
     public void append(Goal goal) {
         goalRepository.append(goal);
     }
+
+    public void prepend(Goal goal) { goalRepository.prepend(goal); }
+
+    public void checkOff(int id) { goalRepository.checkOff(id); }
 }
