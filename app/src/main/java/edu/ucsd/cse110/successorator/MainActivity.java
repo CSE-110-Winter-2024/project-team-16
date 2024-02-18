@@ -118,4 +118,25 @@ public class MainActivity extends AppCompatActivity {
         String formattedDate = date.format(formatter);
         setTitle(formattedDate);
     }
+
+    /**
+     * Getter for testing
+     *
+     * @return the current localDate that is set as title
+     * @author Yubing Lin
+     */
+    public LocalDate getLocalDate() {
+        return localDate;
+    }
+
+    /**
+     * A public method calling incDate for testing
+     *
+     * @return the current localDate that is set as title
+     * @author Yubing Lin
+     */
+    public LocalDate getIncDate() {
+        incDate();
+        return localDate;
+    }
 }
