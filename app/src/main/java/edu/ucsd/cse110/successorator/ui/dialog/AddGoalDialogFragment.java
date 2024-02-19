@@ -58,7 +58,7 @@ public class AddGoalDialogFragment extends DialogFragment {
 
         var goal = new Goal(null, mit, -1);
 
-        activityModel.append(goal);
+        activityModel.prepend(goal);
 /*
         //Change to GoalListFragment ChatGPT
         Bundle result = new Bundle();
