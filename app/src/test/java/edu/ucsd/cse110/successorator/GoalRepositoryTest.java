@@ -24,6 +24,13 @@ public class GoalRepositoryTest {
             new Goal(4,"Thing4", 4)
     );
 
+    public final static List<Goal> TEST_GOALS_FOR_DELETE = List.of(
+            new Goal(0,"Thing1", 0),
+            new Goal(1,"Thing2", 1),
+            new Goal(2,"Thing3", 3),
+            new Goal(3,"Thing4", 4)
+    );
+
     @Before
     public void setUp() {
         dataSource = new InMemoryDataSource();
@@ -43,65 +50,52 @@ public class GoalRepositoryTest {
         assertEquals(goal, goalRepository.find(2).getValue());
     }
 
-//    @Test
-//    public void testFindNonExisting() {
-//        goalRepository.find(5);
-//        assertEquals(Integer.valueOf(6), goalRepository.count());
-//    }
-//
-//    @Test
-//    public void testFindAll() {
-//        // Add some goals
-//        goalRepository.save(new Goal(1, "Goal 1", 0));
-//        goalRepository.save(new Goal(2, "Goal 2", 1));
-//
-//        assertEquals(2, goalRepository.findAll().getValue().size());
-//    }
-//
-//    @Test
-//    public void testSave() {
-//        Goal goal = new Goal(1, "Goal 1", 0);
-//        goalRepository.save(goal);
-//
-//        assertEquals(goal, goalRepository.find(1).getValue());
-//    }
-//
-//    @Test
-//    public void testAppend() {
-//        // Add some goals
-//        goalRepository.save(new Goal(1, "Goal 1", 0));
-//        goalRepository.save(new Goal(2, "Goal 2", 1));
-//
-//        Goal newGoal = new Goal(3, "Goal 3", 2);
-//        goalRepository.append(newGoal);
-//
-//        assertEquals(newGoal, goalRepository.find(3).getValue());
-//    }
-//
-//    @Test
-//    public void testPrepend() {
-//        // Add some goals
-//        goalRepository.save(new Goal(1, "Goal 1", 0));
-//        goalRepository.save(new Goal(2, "Goal 2", 1));
-//
-//        Goal newGoal = new Goal(3, "Goal 3", 2);
-//        goalRepository.prepend(newGoal);
-//
-//        assertEquals(newGoal, goalRepository.find(3).getValue());
-//    }
-//
-//    @Test
-//    public void testCheckOff() {
-//        Goal goal = new Goal(1, "Goal 1", 0);
-//        goalRepository.save(goal);
-//
-//        goalRepository.checkOff(1);
-//
-//        assertTrue(goalRepository.find(1).getValue().isCrossed());
-//    }
+    @Test
+    public void testFindNonExisting() {
+        goalRepository.find(5);
+        assertEquals(Integer.valueOf(4), goalRepository.count());
+    }
+
+    @Test
+    public void testFindAll() {
+        assertEquals(4, goalRepository.findAll().getValue().size());
+    }
+
+    @Test
+    public void testSave() {
+        Goal goal = new Goal(2, "Thing5", 5);
+        goalRepository.save(goal);
+        assertEquals(goal, goalRepository.find(2).getValue());
+    }
+
+    @Test
+    public void testAppend() {
+        Goal goal = new Goal(2, "Thing5", 3);
+        goalRepository.append(goal);
+        assertEquals(Integer.valueOf(5), goalRepository.find(2).getValue().sortOrder());
+        assertEquals(Integer.valueOf(0), goalRepository.find(0).getValue().sortOrder());
+    }
+
+    @Test
+    public void testPrepend() {
+        Goal goal = new Goal(2, "Thing5", 3);
+        goalRepository.prepend(goal);
+        assertEquals(Integer.valueOf(0), goalRepository.find(2).getValue().sortOrder());
+        assertEquals(Integer.valueOf(1), goalRepository.find(0).getValue().sortOrder());
+    }
+
+    @Test
+    public void testCheckOff() {
+        assertFalse(goalRepository.find(1).getValue().isCrossed());
+        goalRepository.checkOff(1);
+        assertTrue(goalRepository.find(1).getValue().isCrossed());
+    }
 
     @Test
     public void testDeleteNoGoals() {
+        dataSource = new InMemoryDataSource();
+        dataSource.putGoals(TEST_GOALS_FOR_DELETE);
+        goalRepository = new GoalRepository(dataSource);
         int initialSize = goalRepository.count();
         goalRepository.deleteCrossedGoals();
         assertEquals(initialSize, (int) goalRepository.count());
@@ -110,10 +104,16 @@ public class GoalRepositoryTest {
 
     @Test
     public void testDeleteCrossedGoals() {
+        dataSource = new InMemoryDataSource();
+        dataSource.putGoals(TEST_GOALS_FOR_DELETE);
+        goalRepository = new GoalRepository(dataSource);
+
+        goalRepository.checkOff(2);
         goalRepository.checkOff(3);
-        goalRepository.checkOff(4);
+
         int initialSize = goalRepository.count();
         goalRepository.deleteCrossedGoals();
+
         assertEquals(initialSize - 2, (int) goalRepository.count());
         assertEquals("Thing1", goalRepository.findAll().getValue().get(0).mit());
         assertEquals("Thing2", goalRepository.findAll().getValue().get(1).mit());
