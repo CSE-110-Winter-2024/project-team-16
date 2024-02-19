@@ -20,7 +20,7 @@ public class Goal implements Serializable {
     private final @Nullable String mit;
     private final @NotNull Integer sortOrder;
 
-    public boolean isCrossed;
+    private boolean isCrossed;
 
 
     public Goal(
@@ -49,6 +49,8 @@ public class Goal implements Serializable {
         return sortOrder;
     }
 
+    public boolean isCrossed() { return isCrossed; }
+
     public void toggle() { isCrossed = !isCrossed; }
 
     public Goal withId(int id) {
@@ -56,7 +58,9 @@ public class Goal implements Serializable {
     }
 
     public Goal withSortOrder(int sortOrder) {
-        return new Goal(this.id(), this.mit(), sortOrder);
+        Goal g = new Goal(this.id(), this.mit(), sortOrder);
+        g.isCrossed = this.isCrossed;
+        return g;
     }
 
     @Override
