@@ -28,8 +28,8 @@ public class InMemoryDataSource {
     }
 
     public final static List<Goal> TEST_GOALS = List.of(
-            new Goal(0,"Thing1", 0),
-            new Goal(1,"Thing2", 1)
+            //new Goal(0,"Thing1", 0),
+            //new Goal(1,"Thing2", 1)
     );
 
     public static InMemoryDataSource fromDefault() {
