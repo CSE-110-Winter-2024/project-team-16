@@ -1,6 +1,7 @@
 package edu.ucsd.cse110.successorator.lib.domain;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import edu.ucsd.cse110.successorator.lib.data.InMemoryDataSource;
 import edu.ucsd.cse110.successorator.lib.util.Subject;
@@ -43,5 +44,21 @@ public class GoalRepository {
 
     public void checkOff(int id) {
         dataSource.checkOffGoal(id);
+    }
+
+    /**
+     * Delete all goals that are crossed out
+     *
+     * @author Yubing Lin
+     */
+    public void deleteCrossedGoals() {
+        //From ChatGPT, find the id of all the crossed out goals
+        List<Integer> crossedGoals = dataSource.getGoals().stream()
+                .filter(Goal::isCrossed)
+                .map(Goal::id)
+                .collect(Collectors.toList());
+
+        //Delete crossed out goals by id
+        crossedGoals.forEach(dataSource::deleteGoal);
     }
 }

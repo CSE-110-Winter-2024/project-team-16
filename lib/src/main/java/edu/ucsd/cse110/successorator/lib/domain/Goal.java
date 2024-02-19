@@ -49,6 +49,9 @@ public class Goal implements Serializable {
         return sortOrder;
     }
 
+    @NotNull
+    public boolean isCrossed() {return isCrossed; }
+
     public void toggle() { isCrossed = !isCrossed; }
 
     public Goal withId(int id) {

@@ -162,4 +162,28 @@ public class InMemoryDataSource {
         assert sortOrders.stream().allMatch(i -> i >= minSortOrder);
         assert sortOrders.stream().allMatch(i -> i <= maxSortOrder);
     }
+
+    /**
+     * Delete a goal by id
+     *
+     * @param id identifier of the goal to delete
+     * @author Yubing Lin
+     */
+    public void deleteGoal(Integer id) {
+        if (goals.containsKey(id)) {
+            //Remove the goal
+            Goal removedGoal = goals.remove(id);
+            if (goalSubjects.containsKey(id)) {
+                goalSubjects.remove(id);
+            }
+
+            //From ChatGPT, modify the order of remaining goals
+            shiftSortOrders(removedGoal.sortOrder() + 1, maxSortOrder, -1);
+            postInsert();
+            assertSortOrderConstraints();
+
+            //Notify the listener that goals change
+            allGoalsSubject.setValue(getGoals());
+        }
+    }
 }
