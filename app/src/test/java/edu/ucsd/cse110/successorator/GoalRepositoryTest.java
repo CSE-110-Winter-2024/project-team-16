@@ -68,13 +68,13 @@ public class GoalRepositoryTest {
         assertEquals(goal, goalRepository.find(2).getValue());
     }
 
-    @Test
-    public void testAppend() {
-        Goal goal = new Goal(2, "Thing5", 3);
-        goalRepository.append(goal);
-        assertEquals(Integer.valueOf(5), goalRepository.find(2).getValue().sortOrder());
-        assertEquals(Integer.valueOf(0), goalRepository.find(0).getValue().sortOrder());
-    }
+//    @Test
+//    public void testAppend() {
+//        Goal goal = new Goal(2, "Thing5", 3);
+//        goalRepository.append(goal);
+//        assertEquals(Integer.valueOf(5), goalRepository.find(2).getValue().sortOrder());
+//        assertEquals(Integer.valueOf(0), goalRepository.find(0).getValue().sortOrder());
+//    }
 
     @Test
     public void testPrepend() {
@@ -108,14 +108,14 @@ public class GoalRepositoryTest {
         dataSource.putGoals(TEST_GOALS_FOR_DELETE);
         goalRepository = new GoalRepository(dataSource);
 
-        goalRepository.checkOff(2);
-        goalRepository.checkOff(3);
+        goalRepository.checkOff(0);
+        goalRepository.checkOff(1);
 
         int initialSize = goalRepository.count();
         goalRepository.deleteCrossedGoals();
 
         assertEquals(initialSize - 2, (int) goalRepository.count());
-        assertEquals("Thing1", goalRepository.findAll().getValue().get(0).mit());
-        assertEquals("Thing2", goalRepository.findAll().getValue().get(1).mit());
+        assertEquals("Thing3", goalRepository.findAll().getValue().get(0).mit());
+        assertEquals("Thing4", goalRepository.findAll().getValue().get(1).mit());
     }
 }

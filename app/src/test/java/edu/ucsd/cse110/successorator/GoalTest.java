@@ -18,20 +18,20 @@ public class GoalTest {
 
     @Test
     public void testToggle() {
-        assertFalse(goalOne.isCrossed);
+        assertFalse(goalOne.isCrossed());
         goalOne.toggle();
-        assertTrue(goalOne.isCrossed);
-        assertFalse(goalTwo.isCrossed);
+        assertTrue(goalOne.isCrossed());
+        assertFalse(goalTwo.isCrossed());
     }
 
     @Test
     public void testToggleAll() {
-        assertFalse(goalOne.isCrossed);
-        assertFalse(goalTwo.isCrossed);
+        assertFalse(goalOne.isCrossed());
+        assertFalse(goalTwo.isCrossed());
         goalOne.toggle();
         goalTwo.toggle();
-        assertTrue(goalOne.isCrossed);
-        assertTrue(goalTwo.isCrossed);
+        assertTrue(goalOne.isCrossed());
+        assertTrue(goalTwo.isCrossed());
     }
 
     @Test
