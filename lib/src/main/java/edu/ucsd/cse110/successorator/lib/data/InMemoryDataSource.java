@@ -124,7 +124,7 @@ public class InMemoryDataSource {
             // If the goal has no id, give it one.
             goal = goal.withId(nextId++);
         }
-        else if (id > nextId) {
+        else if (id >= nextId) {
             // If the goal has an id, update nextId if necessary to avoid giving out the same
             // one. This is important for when we pre-load goals like in fromDefault().
             nextId = id + 1;
