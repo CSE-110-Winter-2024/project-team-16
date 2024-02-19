@@ -17,7 +17,7 @@ public class InMemoryDataSource {
     private int minSortOrder = Integer.MAX_VALUE;
     private int maxSortOrder = Integer.MIN_VALUE;
 
-    private int begOfCrossed = 2;
+    private int begOfCrossed = 0;
 
     private final Map<Integer, Goal> goals
             = new HashMap<>();
@@ -34,9 +34,11 @@ public class InMemoryDataSource {
             new Goal(1,"Thing2", 1)
     );
 
+    private final String defaultMessage = "No goals for the Day. Click the + at the upper right to enter your Most Important Thing.";
+
     public static InMemoryDataSource fromDefault() {
         var data = new InMemoryDataSource();
-        data.putGoals(TEST_GOALS);
+
         return data;
     }
 

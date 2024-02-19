@@ -13,18 +13,26 @@ import androidx.appcompat.app.AppCompatActivity;
 //import edu.ucsd.cse110.successorator.app.R;
 import edu.ucsd.cse110.successorator.databinding.ActivityMainBinding;
 //import edu.ucsd.cse110.successorator.app.ui.GoalListFragment;
+import edu.ucsd.cse110.successorator.ui.GoalListFragment;
 import edu.ucsd.cse110.successorator.ui.dialog.AddGoalDialogFragment;
 
 public class MainActivity extends AppCompatActivity {
+
+    private ActivityMainBinding view;
+
+    private boolean isShowingGreeting = true;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("Wednesday 2/14");
-        var view = ActivityMainBinding.inflate(getLayoutInflater(), null, false);
+
+        this.view = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(view.getRoot());
+        // var view = ActivityMainBinding.inflate(getLayoutInflater(), null, false);
         //view.placeholderText.setText(R.string.empty_list_greeting);
 
 
-        setContentView(view.getRoot());
+        // setContentView(view.getRoot());
     }
 
     @Override
@@ -77,4 +85,19 @@ public class MainActivity extends AppCompatActivity {
        // var dialogFragment = AddGoalDialogFragment.newInstance();
         //dialogFragment.show(getParentFragmentManager(), "AddGoalDialogFragment");
     }
+
+//    private void swapFragments() {
+//        if (isShowingGreeting) {
+//            getSupportFragmentManager()
+//                    .beginTransaction()
+//                    .replace(R.id.fragment_container, GoalListFragment.newInstance())
+//                    .commit();
+//        } else {
+//            getSupportFragmentManager()
+//                    .beginTransaction()
+//                    .replace(R.id.fragment_container, Fragment.newInstance())
+//                    .commit();
+//        }
+//        isShowingGreeting = !isShowingGreeting;
+//    }
 }
