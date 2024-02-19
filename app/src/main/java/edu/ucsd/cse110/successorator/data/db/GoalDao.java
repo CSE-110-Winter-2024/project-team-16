@@ -53,15 +53,22 @@ public interface GoalDao {
     @Transaction
     default int append(GoalEntity goal) {
         var maxSortOrder = getMaxSortOrder();
-        var newGoal = new GoalEntity(goal.mit, goal.sortOrder);
+        var newGoal = new GoalEntity(goal.mit, goal.sortOrder, goal.isCrossed);
         return Math.toIntExact(insert(newGoal));
     }
 
     @Transaction
     default int prepend(GoalEntity goal) {
         shiftSortOrders(getMinSortOrder(), getMaxSortOrder(), 1);
-        var newGoal = new GoalEntity(goal.mit, getMinSortOrder() - 1);
+        var newGoal = new GoalEntity(goal.mit, getMinSortOrder() - 1, goal.isCrossed);
         return Math.toIntExact(insert(newGoal));
+    }
+
+    @Transaction
+    default int checkoff(GoalEntity goal) {
+        goal.isCrossed = !goal.isCrossed;
+        System.out.println(goal.mit + " is" + goal.isCrossed);
+        return Math.toIntExact(insert(goal));
     }
 
     // Delete

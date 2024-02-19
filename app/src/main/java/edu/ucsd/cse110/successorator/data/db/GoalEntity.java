@@ -23,15 +23,20 @@ public class GoalEntity {
     @ColumnInfo(name = "sort_order")
     public int sortOrder;
 
-    GoalEntity(@NonNull String mit, int sortOrder) {
+    @ColumnInfo(name = "is_crossed")
+    public boolean isCrossed;
+
+    GoalEntity(@NonNull String mit, int sortOrder, boolean isCrossed) {
         this.mit = mit;
         this.sortOrder = sortOrder;
+        this.isCrossed = isCrossed;
     }
 
     public static GoalEntity fromGoal(@NonNull Goal goal) {
         var goalEntity = new GoalEntity(
                 Objects.requireNonNull(goal.mit()),
-                goal.sortOrder()
+                goal.sortOrder(),
+                goal.isCrossed()
         );
         goalEntity.id = goal.id();
         return goalEntity;
