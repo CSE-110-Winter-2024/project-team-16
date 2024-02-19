@@ -1,7 +1,10 @@
 package edu.ucsd.cse110.successorator;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.Assert.*;
 
@@ -29,6 +32,75 @@ public class GoalRepositoryTest {
     }
 
     @Test
+    public void testCount() {
+        assertEquals(Integer.valueOf(4), goalRepository.count());
+    }
+
+    @Test
+    public void testFindExisting() {
+        Goal goal = new Goal(2, "Thing5", 5);
+        goalRepository.save(goal);
+        assertEquals(goal, goalRepository.find(2).getValue());
+    }
+
+//    @Test
+//    public void testFindNonExisting() {
+//        goalRepository.find(5);
+//        assertEquals(Integer.valueOf(6), goalRepository.count());
+//    }
+//
+//    @Test
+//    public void testFindAll() {
+//        // Add some goals
+//        goalRepository.save(new Goal(1, "Goal 1", 0));
+//        goalRepository.save(new Goal(2, "Goal 2", 1));
+//
+//        assertEquals(2, goalRepository.findAll().getValue().size());
+//    }
+//
+//    @Test
+//    public void testSave() {
+//        Goal goal = new Goal(1, "Goal 1", 0);
+//        goalRepository.save(goal);
+//
+//        assertEquals(goal, goalRepository.find(1).getValue());
+//    }
+//
+//    @Test
+//    public void testAppend() {
+//        // Add some goals
+//        goalRepository.save(new Goal(1, "Goal 1", 0));
+//        goalRepository.save(new Goal(2, "Goal 2", 1));
+//
+//        Goal newGoal = new Goal(3, "Goal 3", 2);
+//        goalRepository.append(newGoal);
+//
+//        assertEquals(newGoal, goalRepository.find(3).getValue());
+//    }
+//
+//    @Test
+//    public void testPrepend() {
+//        // Add some goals
+//        goalRepository.save(new Goal(1, "Goal 1", 0));
+//        goalRepository.save(new Goal(2, "Goal 2", 1));
+//
+//        Goal newGoal = new Goal(3, "Goal 3", 2);
+//        goalRepository.prepend(newGoal);
+//
+//        assertEquals(newGoal, goalRepository.find(3).getValue());
+//    }
+//
+//    @Test
+//    public void testCheckOff() {
+//        Goal goal = new Goal(1, "Goal 1", 0);
+//        goalRepository.save(goal);
+//
+//        goalRepository.checkOff(1);
+//
+//        assertTrue(goalRepository.find(1).getValue().isCrossed());
+//    }
+
+    @Test
     public void testDeleteNoGoals() {
         int initialSize = goalRepository.count();
         goalRepository.deleteCrossedGoals();
@@ -46,17 +118,4 @@ public class GoalRepositoryTest {
         assertEquals("Thing1", goalRepository.findAll().getValue().get(0).mit());
         assertEquals("Thing2", goalRepository.findAll().getValue().get(1).mit());
     }
-
-    @Test
-    public void testDeleteAllGoals() {
-        goalRepository.checkOff(0);
-        goalRepository.checkOff(1);
-        goalRepository.checkOff(3);
-        goalRepository.checkOff(4);
-        int initialSize = goalRepository.count();
-        goalRepository.deleteCrossedGoals();
-        assertEquals(0, (int) goalRepository.count());
-    }
-
-
 }

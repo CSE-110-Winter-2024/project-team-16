@@ -4,7 +4,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.widget.Toolbar;
-import  android.support.v7.widget.Toolbar;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.ViewInteraction;
@@ -20,12 +19,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class DateDisplayTest {
-    //ViewInteraction incDate = Espresso.onView(ViewMatchers.withId(R.id.action_bar_increment_date));
+    ViewInteraction incDate = Espresso.onView(ViewMatchers.withId(R.id.action_bar_increment_date));
 
-//    @Rule
-//    public ActivityScenarioRule<MainActivity> activityScenarioRule =
-//            new ActivityScenarioRule<>(MainActivity.class);
-//
+    @Rule
+    public ActivityScenarioRule<MainActivity> activityScenarioRule =
+            new ActivityScenarioRule<>(MainActivity.class);
+
 //    @Test
 //    public void defaultDateTest() {
 //        //Generate the current date in format of title
@@ -37,10 +36,10 @@ public class DateDisplayTest {
 //        Espresso.onView(ViewMatchers.isAssignableFrom(Toolbar.class))
 //                .check(matches(withText(expectedString)));
 //    }
-//
-//    @Test
-//    public void IncDateOnceTest() {
-//
-//
-//    }
+
+    @Test
+    public void IncDateOnceTest() {
+
+
+    }
 }
