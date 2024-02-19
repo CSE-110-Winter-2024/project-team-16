@@ -161,9 +161,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void executeDeleteCrossedGoals() {
         // Call deleteCrossedGoals() method from GoalRepository
-        if (goalRepository != null) {
-            goalRepository.deleteCrossedGoals();
-        }
+//        if (goalRepository != null) {
+//            goalRepository.deleteCrossedGoals();
+//        }
 
         // Update the flag to indicate execution
         long executionTimeStamp = System.currentTimeMillis();
