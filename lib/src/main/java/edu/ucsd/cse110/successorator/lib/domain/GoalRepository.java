@@ -58,7 +58,12 @@ public class GoalRepository {
                 .map(Goal::id)
                 .collect(Collectors.toList());
 
+        System.out.println("Crossed Goals IDs: " + crossedGoals);
+
         //Delete crossed out goals by id
-        crossedGoals.forEach(dataSource::deleteGoal);
+        for (Integer id: crossedGoals) {
+            dataSource.deleteGoal(id);
+            System.out.println("Deleted Goal ID: " + id);
+        }
     }
 }
