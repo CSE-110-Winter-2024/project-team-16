@@ -17,6 +17,8 @@ public class InMemoryDataSource {
     private int minSortOrder = Integer.MAX_VALUE;
     private int maxSortOrder = Integer.MIN_VALUE;
 
+    private int begOfCrossed = 2;
+
     private final Map<Integer, Goal> goals
             = new HashMap<>();
     private final Map<Integer, MutableSubject<Goal>> goalSubjects
@@ -95,11 +97,35 @@ public class InMemoryDataSource {
         allGoalsSubject.setValue(getGoals());
     }
 
+    public void removeGoal(int id, int from, int to, int by) {
+        var card = goals.get(id);
+        var sortOrder = card.sortOrder();
+
+        goals.remove(id);
+        shiftSortOrders(from, to, by);
+
+        if (goalSubjects.containsKey(id)) {
+            goalSubjects.get(id).setValue(null);
+        }
+        allGoalsSubject.setValue(getGoals());
+    }
+
     public void checkOffGoal(int id) {
         var goal = goals.get(id);
         goal.toggle();
         var sortOrder = goal.sortOrder();
-
+        if(goal.isCrossed()) {
+            removeGoal(id, sortOrder, begOfCrossed-1, -1);
+            putGoal(goal.withSortOrder(begOfCrossed-1));
+//            var goal1 = goals.get(id);
+//            goal1.toggle();
+            begOfCrossed--;
+        } else {
+            int min = minSortOrder;
+            removeGoal(id, minSortOrder, sortOrder-1, 1);
+            putGoal(goal.withSortOrder(min));
+            begOfCrossed++;
+        }
 
 //        shiftSortOrders(sortOrder, maxSortOrder, -1);
 //
@@ -118,13 +144,32 @@ public class InMemoryDataSource {
         putGoals(goalss);
     }
 
+    public void append(Goal goal) {
+        shiftSortOrders(begOfCrossed, maxSortOrder, 1);
+        putGoal(goal.withSortOrder(begOfCrossed));
+        begOfCrossed++;
+    }
+
+//    public void rotateSortOrders(int from, int to, int by) {
+//        var goalss = goals.values().stream()
+//                .filter(goal -> goal.sortOrder() >= from && goal.sortOrder() <= to)
+//                .map(goal -> goal.withSortOrder(goal.sortOrder() + by))
+//                .collect(Collectors.toList());
+//
+//        if(by < 0) {
+////            Goal g = goals.
+//        }
+//
+//        putGoals(goalss);
+//    }
+
     private Goal preInsert(Goal goal) {
         var id = goal.id();
         if (id == null) {
             // If the goal has no id, give it one.
             goal = goal.withId(nextId++);
         }
-        else if (id > nextId) {
+        else if (id >= nextId) {
             // If the goal has an id, update nextId if necessary to avoid giving out the same
             // one. This is important for when we pre-load goals like in fromDefault().
             nextId = id + 1;
@@ -163,27 +208,9 @@ public class InMemoryDataSource {
         assert sortOrders.stream().allMatch(i -> i <= maxSortOrder);
     }
 
-    /**
-     * Delete a goal by id
-     *
-     * @param id identifier of the goal to delete
-     * @author Yubing Lin
-     */
-    public void deleteGoal(Integer id) {
-        if (goals.containsKey(id)) {
-            //Remove the goal
-            Goal removedGoal = goals.remove(id);
-            if (goalSubjects.containsKey(id)) {
-                goalSubjects.remove(id);
-            }
-
-            //From ChatGPT, modify the order of remaining goals
-            shiftSortOrders(removedGoal.sortOrder() + 1, maxSortOrder, -1);
-            postInsert();
-            assertSortOrderConstraints();
-
-            //Notify the listener that goals change
-            allGoalsSubject.setValue(getGoals());
-        }
+    public void incrementCrossIndex() {
+        begOfCrossed++;
     }
+
+    public int getCrossIndex() { return begOfCrossed; }
 }
