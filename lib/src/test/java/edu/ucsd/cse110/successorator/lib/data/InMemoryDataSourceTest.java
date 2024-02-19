@@ -43,7 +43,7 @@ public class InMemoryDataSourceTest {
         Goal goal1 = new Goal(0,"Thing1", 0);
         dataSource.putGoal(goal1);
         dataSource.checkOffGoal(0);
-        assertTrue(dataSource.getGoal(0).isCrossed);
+        assertTrue(dataSource.getGoal(0).isCrossed());
     }
 
     @Test
