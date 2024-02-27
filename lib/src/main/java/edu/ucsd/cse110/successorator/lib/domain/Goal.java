@@ -3,16 +3,8 @@ package edu.ucsd.cse110.successorator.lib.domain;
 import androidx.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.Font;
-import java.awt.font.TextAttribute;
 import java.io.Serializable;
-import java.text.AttributedString;
-import java.util.Map;
 import java.util.Objects;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class Goal implements Serializable {
@@ -20,18 +12,18 @@ public class Goal implements Serializable {
     private final @Nullable String mit;
     private final @NotNull Integer sortOrder;
 
-    public boolean isCrossed;
+    private boolean isCrossed;
 
 
     public Goal(
         @Nullable Integer id,
         @Nullable String mit,
-        @NotNull Integer sortOrder
-    ) {
+        @NotNull Integer sortOrder,
+        boolean isCrossed) {
         this.id = id;
         this.mit = mit;
         this.sortOrder = sortOrder;
-        isCrossed = false;
+        this.isCrossed = isCrossed;
     }
 
     @Nullable
@@ -54,11 +46,11 @@ public class Goal implements Serializable {
     public void toggle() { isCrossed = !isCrossed; }
 
     public Goal withId(int id) {
-        return new Goal(id, this.mit(), this.sortOrder());
+        return new Goal(id, this.mit(), this.sortOrder(), this.isCrossed);
     }
 
     public Goal withSortOrder(int sortOrder) {
-        return new Goal(this.id(), this.mit(), sortOrder);
+        return new Goal(this.id(), this.mit(), this.sortOrder(), this.isCrossed);
     }
 
     @Override
@@ -66,11 +58,12 @@ public class Goal implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Goal goal = (Goal) o;
-        return Objects.equals(id, goal.id) && Objects.equals(mit, goal.mit) && Objects.equals(sortOrder, goal.sortOrder);
+        return Objects.equals(id, goal.id) && Objects.equals(mit, goal.mit) && Objects.equals(sortOrder, goal.sortOrder)
+        && (isCrossed == goal.isCrossed());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, mit, sortOrder);
+        return Objects.hash(id, mit, sortOrder, isCrossed);
     }
 }

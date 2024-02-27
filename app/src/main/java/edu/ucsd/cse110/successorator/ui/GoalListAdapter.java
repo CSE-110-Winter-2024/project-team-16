@@ -11,17 +11,19 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
+import edu.ucsd.cse110.successorator.data.db.GoalEntity;
 import edu.ucsd.cse110.successorator.databinding.ListItemGoalBinding;
 import edu.ucsd.cse110.successorator.lib.domain.Goal;
 
-public class GoalListAdapter extends ArrayAdapter<Goal> {
+public class GoalListAdapter extends ArrayAdapter<GoalEntity> {
     Consumer<Integer> onClick;
 
     public GoalListAdapter(
             Context context,
-            List<Goal> goals,
+            List<GoalEntity> goals,
             Consumer<Integer> onClick
     ) {
         // This sets a bunch of stuff internally, which we can access
@@ -53,19 +55,20 @@ public class GoalListAdapter extends ArrayAdapter<Goal> {
         }
 
         // Populate the view with the goal's data.
-        binding.goalMitText.setText(goal.mit());
+        binding.goalMitText.setText(goal.mit);
 
         if(goal.isCrossed) {
             binding.changeStatus.setPaintFlags(binding.changeStatus.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         } else {
-            binding.changeStatus.setText(goal.mit());
+            binding.changeStatus.setText(goal.mit);
             binding.changeStatus.setPaintFlags(binding.changeStatus.getPaintFlags() & ~(Paint.STRIKE_THRU_TEXT_FLAG));
         }
 
         // Bind the delete button to the callback.
         binding.changeStatus.setOnClickListener(v-> {
-            var id = goal.id();
+            var id = goal.id;
             assert id != null;
+
             onClick.accept(id);
         });
 
@@ -86,7 +89,7 @@ public class GoalListAdapter extends ArrayAdapter<Goal> {
         var goal = getItem(position);
         assert goal != null;
 
-        var id = goal.id();
+        var id = goal.id;
         assert id != null;
 
         return id;

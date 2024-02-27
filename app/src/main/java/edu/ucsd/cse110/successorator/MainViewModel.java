@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import edu.ucsd.cse110.successorator.data.db.GoalEntity;
 import edu.ucsd.cse110.successorator.lib.domain.Goal;
 import edu.ucsd.cse110.successorator.lib.domain.GoalRepository;
 
@@ -18,7 +19,7 @@ import edu.ucsd.cse110.successorator.lib.util.Subject;
 
 public class MainViewModel extends ViewModel {
     private final GoalRepository goalRepository;
-    private final MutableSubject<List<Goal>> orderedGoals;
+    private final MutableSubject<List<GoalEntity>> orderedGoals;
     // private final MutableSubject<Boolean> isCrossedOff;
     // private final MutableSubject<String> displayedText;
 
@@ -48,6 +49,7 @@ public class MainViewModel extends ViewModel {
 
             var newOrderedGoals = goals.stream()
                     .sorted(Comparator.comparingInt(Goal::sortOrder))
+                    .map(GoalEntity::fromGoal)
                     .collect(Collectors.toList());
 
             orderedGoals.setValue(newOrderedGoals);
@@ -55,7 +57,7 @@ public class MainViewModel extends ViewModel {
 
     }
 
-    public Subject<List<Goal>> getOrderedGoals() {
+    public Subject<List<GoalEntity>> getOrderedGoals() {
         return orderedGoals;
     }
 
@@ -63,7 +65,11 @@ public class MainViewModel extends ViewModel {
         goalRepository.append(goal);
     }
 
-    public void prepend(Goal goal) { goalRepository.prepend(goal); }
+    public void prepend(Goal goal) {
+        goalRepository.prepend(goal);
+    }
 
-    public void checkOff(int id) { goalRepository.checkOff(id); }
+    public void checkOff(int id) {
+        goalRepository.checkOff(id);
+    }
 }

@@ -56,9 +56,9 @@ public class AddGoalDialogFragment extends DialogFragment {
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
         var mit = view.addGoalEditText.getText().toString();
 
-        var goal = new Goal(null, mit, -1);
+        var goal = new Goal(null, mit, -1, false);
 
-        activityModel.prepend(goal);
+        activityModel.append(goal);
 /*
         //Change to GoalListFragment ChatGPT
         Bundle result = new Bundle();

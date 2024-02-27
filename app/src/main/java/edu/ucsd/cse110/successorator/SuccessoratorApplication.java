@@ -21,7 +21,7 @@ public class SuccessoratorApplication extends Application {
                 getApplicationContext(),
                 SuccessoratorDatabase.class,
                 "successorator-database"
-        )
+            )
                 .allowMainThreadQueries()
                 .build();
 
