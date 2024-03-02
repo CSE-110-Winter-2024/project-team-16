@@ -18,17 +18,17 @@ public class GoalRepositoryTest {
     private InMemoryDataSource dataSource;
     private GoalRepository goalRepository;
     public final static List<Goal> TEST_GOALS = List.of(
-            new Goal(0,"Thing1", 0),
-            new Goal(1,"Thing2", 1),
-            new Goal(3,"Thing3", 3),
-            new Goal(4,"Thing4", 4)
+            new Goal(0,"Thing1", 0, false),
+            new Goal(1,"Thing2", 1, false),
+            new Goal(3,"Thing3", 3, false),
+            new Goal(4,"Thing4", 4, false)
     );
 
     public final static List<Goal> TEST_GOALS_FOR_DELETE = List.of(
-            new Goal(0,"Thing1", 0),
-            new Goal(1,"Thing2", 1),
-            new Goal(2,"Thing3", 3),
-            new Goal(3,"Thing4", 4)
+            new Goal(0,"Thing1", 0, false),
+            new Goal(1,"Thing2", 1, false),
+            new Goal(2,"Thing3", 3, false),
+            new Goal(3,"Thing4", 4, false)
     );
 
     @Before
@@ -45,7 +45,7 @@ public class GoalRepositoryTest {
 
     @Test
     public void testFindExisting() {
-        Goal goal = new Goal(2, "Thing5", 5);
+        Goal goal = new Goal(2, "Thing5", 5, false);
         goalRepository.save(goal);
         assertEquals(goal, goalRepository.find(2).getValue());
     }
@@ -63,7 +63,7 @@ public class GoalRepositoryTest {
 
     @Test
     public void testSave() {
-        Goal goal = new Goal(2, "Thing5", 5);
+        Goal goal = new Goal(2, "Thing5", 5, false);
         goalRepository.save(goal);
         assertEquals(goal, goalRepository.find(2).getValue());
     }
