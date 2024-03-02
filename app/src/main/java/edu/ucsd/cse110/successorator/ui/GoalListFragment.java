@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
+import edu.ucsd.cse110.successorator.data.db.GoalEntity;
 import edu.ucsd.cse110.successorator.databinding.FragmentGoalListBinding;
 
 public class GoalListFragment extends Fragment {
@@ -56,6 +57,7 @@ public class GoalListFragment extends Fragment {
             if (goals == null) return;
             adapter.clear();
             adapter.addAll(new ArrayList<>(goals)); // remember the mutable copy here!
+            //adapter.addAll(entities);
             adapter.notifyDataSetChanged();
         });//works when I add this!!
     }
