@@ -1,7 +1,5 @@
 package edu.ucsd.cse110.successorator.lib.data;
 
-import java.awt.Font;
-import java.awt.font.TextAttribute;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +28,8 @@ public class InMemoryDataSource {
     }
 
     public final static List<Goal> TEST_GOALS = List.of(
-            new Goal(0,"Thing1", 0),
-            new Goal(1,"Thing2", 1)
+            new Goal(0,"Thing1", 0, false),
+            new Goal(1,"Thing2", 1, false)
     );
 
     public static InMemoryDataSource fromDefault() {
