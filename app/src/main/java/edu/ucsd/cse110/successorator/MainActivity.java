@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -18,7 +19,9 @@ import java.util.Calendar;
 //import edu.ucsd.cse110.successorator.app.R;
 import edu.ucsd.cse110.successorator.databinding.ActivityMainBinding;
 //import edu.ucsd.cse110.successorator.app.ui.GoalListFragment;
+import edu.ucsd.cse110.successorator.ui.GoalListFragment;
 import edu.ucsd.cse110.successorator.ui.dialog.AddGoalDialogFragment;
+import edu.ucsd.cse110.successorator.ui.greeting.GreetingFragment;
 
 public class MainActivity extends AppCompatActivity {
     private LocalDate localDate;
@@ -30,12 +33,25 @@ public class MainActivity extends AppCompatActivity {
     private static final int MILLIS_SECOND = 1000;
     private static final int TIME_TO_DELETE = 2;
 
+    private MainViewModel activityModel;
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setDate();
         var view = ActivityMainBinding.inflate(getLayoutInflater(), null, false);
         //view.placeholderText.setText(R.string.empty_list_greeting);
+
+        // Initialize the Model
+        var modelOwner = this;
+        var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
+        var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
+        this.activityModel = modelProvider.get(MainViewModel.class);
+
+        this.activityModel.isEmpty().observe( empty -> {
+                swapFragments(empty);
+        });
 
         //timeManager = new TimeManager(this);
         sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
@@ -166,6 +182,20 @@ public class MainActivity extends AppCompatActivity {
         // Update the flag to indicate execution
         long executionTimeStamp = System.currentTimeMillis();
         sharedPreferences.edit().putLong("lastExecution", executionTimeStamp).apply();
+    }
+
+    private void swapFragments(boolean isEmpty) {
+        if(isEmpty) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, GreetingFragment.newInstance())
+                    .commit();
+        } else {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, GoalListFragment.newInstance())
+                    .commit();
+        }
     }
 
 //    /**
