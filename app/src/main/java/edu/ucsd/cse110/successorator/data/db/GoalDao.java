@@ -13,23 +13,54 @@ import java.util.stream.Collectors;
 
 import edu.ucsd.cse110.successorator.lib.domain.Goal;
 
+/***
+ * GoalDao is the Data Access Object used to interact with the persisting data.
+ *
+ */
 @Dao
 public interface GoalDao {
 
-    // Insert Goals
+    /**
+     * Insert a goal into the database. Replace if it already exists.
+     * @author Nihal Chowdhury
+     * @param goal The GoalEntity to be inserted.
+     * @return Database stuff.
+     */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Long insert(GoalEntity goal);
 
+    /**
+     * Insert a list of GoalEntities into the database. Replace if it already exists.
+     * @author Nihal Chowdhury
+     * @param goals The list of GoalEntities to be inserted.
+     * @return Database stuff.
+     */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     List<Long> insert(List<GoalEntity> goals);
 
-    // Select
+    /**
+     * Find a GoalEntity with its id.
+     * @author Nihal Chowdhury
+     * @param id Integer id of the goal.
+     * @return The GoalEntity if its found.
+     */
     @Query("SELECT * FROM goals WHERE ID = :id")
     GoalEntity find(int id);
 
+    /**
+     * Get a list of all GoalEntities in the database.
+     * @author Nihal Chowdhury
+     * @return The entire list of saved GoalEntities.
+     */
     @Query("SELECT * FROM goals ORDER BY sort_order")
     List<GoalEntity> findAll();
 
+    /**
+     * Get a GoalEntity as persisting data.
+     * @author Nihal Chowdhury
+     * @param id The id of the GoalEntity
+     * @return The GoalEntity
+     */
     @Query("SELECT * FROM goals WHERE id = :id")
     LiveData<GoalEntity> findAsLiveData(int id);
 

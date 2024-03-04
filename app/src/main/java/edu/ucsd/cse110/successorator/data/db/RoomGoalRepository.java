@@ -87,7 +87,7 @@ public class RoomGoalRepository implements IGoalRepository {
         );
 
         goalDao.delete(id);
-        postInsert();
+        getTopOfCrossedOffGoals();
         System.out.print(newGoalEntity.mit + " is ");
         if (newGoalEntity.isCrossed) {
             goalDao.shiftSortOrders(newGoalEntity.sortOrder, topOfFinished - 1, -1);
@@ -106,7 +106,17 @@ public class RoomGoalRepository implements IGoalRepository {
 
     @Override
     public void deleteCrossedGoals() {
+        List<Integer> crossedGoals = goalDao.findAll().stream()
+                .filter(e -> e.isCrossed)
+                .map(e -> e.id)
+                .collect(Collectors.toList());
 
+        System.out.println("Crossed Goals IDs: " + crossedGoals);
+
+        for (Integer id: crossedGoals) {
+            goalDao.delete(id);
+            System.out.println("Deleted Goal ID: " + id);
+        }
     }
 
     private Goal preInsert(Goal goal) {
@@ -125,7 +135,7 @@ public class RoomGoalRepository implements IGoalRepository {
         return goal;
     }
 
-    private void postInsert() {
+    private void getTopOfCrossedOffGoals() {
         var entities = goalDao.findAll();
         assert entities != null;
 
