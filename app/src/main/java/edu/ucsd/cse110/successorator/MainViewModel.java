@@ -13,12 +13,13 @@ import edu.ucsd.cse110.successorator.data.db.GoalEntity;
 import edu.ucsd.cse110.successorator.lib.domain.Goal;
 import edu.ucsd.cse110.successorator.lib.domain.GoalRepository;
 
+import edu.ucsd.cse110.successorator.lib.domain.IGoalRepository;
 import edu.ucsd.cse110.successorator.lib.util.MutableSubject;
 import edu.ucsd.cse110.successorator.lib.util.SimpleSubject;
 import edu.ucsd.cse110.successorator.lib.util.Subject;
 
 public class MainViewModel extends ViewModel {
-    private final GoalRepository goalRepository;
+    private final IGoalRepository goalRepository;
     private final MutableSubject<List<GoalEntity>> orderedGoals;
     // private final MutableSubject<Boolean> isCrossedOff;
     // private final MutableSubject<String> displayedText;
@@ -32,7 +33,7 @@ public class MainViewModel extends ViewModel {
                         return new MainViewModel(app.getGoalRepository());
                     });
 
-    public MainViewModel(GoalRepository goalRepository) {
+    public MainViewModel(IGoalRepository goalRepository) {
         this.goalRepository = goalRepository;
 
         // Create the observable subjects.

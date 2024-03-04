@@ -78,7 +78,7 @@ public class GoalRepositoryTest {
 
     @Test
     public void testPrepend() {
-        Goal goal = new Goal(2, "Thing5", 3);
+        Goal goal = new Goal(2, "Thing5", 3, false);
         goalRepository.prepend(goal);
         assertEquals(Integer.valueOf(0), goalRepository.find(2).getValue().sortOrder());
         assertEquals(Integer.valueOf(1), goalRepository.find(0).getValue().sortOrder());

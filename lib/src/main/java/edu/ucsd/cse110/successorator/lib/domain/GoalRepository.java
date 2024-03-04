@@ -31,6 +31,11 @@ public class GoalRepository implements IGoalRepository {
     public void save(Goal goal){
         dataSource.putGoal(goal);
     }
+
+    @Override
+    public void save(List<Goal> goals) {
+        dataSource.getGoals();
+    }
     //public void save(List<Goal> goals) {dataSource.putGoals(goals);}
 
     @Override

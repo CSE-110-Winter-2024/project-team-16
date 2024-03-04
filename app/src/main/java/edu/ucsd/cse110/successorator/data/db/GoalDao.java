@@ -52,9 +52,9 @@ public interface GoalDao {
 
     @Transaction
     default int append(GoalEntity goal) {
-        var maxSortOrder = getMaxSortOrder();
-        var newGoal = new GoalEntity(goal.id, goal.mit, maxSortOrder + 1, goal.isCrossed);
-        return Math.toIntExact(insert(newGoal));
+        //var maxSortOrder = getMaxSortOrder();
+        //var newGoal = new GoalEntity(goal.id, goal.mit, maxSortOrder + 1, goal.isCrossed);
+        return Math.toIntExact(insert(goal));
     }
 
     @Transaction

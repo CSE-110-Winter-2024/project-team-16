@@ -8,10 +8,11 @@ import edu.ucsd.cse110.successorator.data.db.RoomGoalRepository;
 import edu.ucsd.cse110.successorator.data.db.SuccessoratorDatabase;
 import edu.ucsd.cse110.successorator.lib.data.InMemoryDataSource;
 import edu.ucsd.cse110.successorator.lib.domain.GoalRepository;
+import edu.ucsd.cse110.successorator.lib.domain.IGoalRepository;
 
 public class SuccessoratorApplication extends Application {
     private InMemoryDataSource dataSource;
-    private GoalRepository goalRepository;
+    private IGoalRepository goalRepository;
 
     @Override
     public void onCreate() {
@@ -41,7 +42,7 @@ public class SuccessoratorApplication extends Application {
         }
     }
 
-    public GoalRepository getGoalRepository() {
+    public IGoalRepository getGoalRepository() {
         return goalRepository;
     }
 }
