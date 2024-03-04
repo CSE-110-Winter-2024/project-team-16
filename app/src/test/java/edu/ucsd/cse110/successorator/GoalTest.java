@@ -82,7 +82,7 @@ public class GoalTest {
 
     @Test
     public void testHash() {
-        int hashGoalOne = Objects.hash(goalOne.id(), goalOne.mit(), goalOne.sortOrder());
+        int hashGoalOne = Objects.hash(goalOne.id(), goalOne.mit(), goalOne.sortOrder(), goalOne.isCrossed());
         assertEquals(hashGoalOne, goalOne.hashCode());
         assertNotEquals(hashGoalOne, goalTwo.hashCode());
     }
