@@ -13,8 +13,8 @@ import edu.ucsd.cse110.successorator.lib.domain.GoalRepository;
 import java.util.Objects;
 
 public class GoalTest {
-    private Goal goalOne = new Goal(0,"Thing1", 0);
-    private Goal goalTwo = new Goal(1,"Thing2", 1);
+    private Goal goalOne = new Goal(0,"Thing1", 0, false);
+    private Goal goalTwo = new Goal(1,"Thing2", 1, false);
 
     @Test
     public void testToggle() {
@@ -67,8 +67,8 @@ public class GoalTest {
 
     @Test
     public void testEqualsSameValue() {
-        Goal goalThree = new Goal(0,"Thing1", 0);
-        Goal goalFour = new Goal(1, "Thing1", 0);
+        Goal goalThree = new Goal(0,"Thing1", 0, false);
+        Goal goalFour = new Goal(1, "Thing1", 0, false);
         assertTrue(goalOne.equals(goalThree));
         assertFalse(goalOne.equals(goalFour));
     }
