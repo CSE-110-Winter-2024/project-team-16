@@ -15,7 +15,7 @@ public class InMemoryDataSource {
     private int minSortOrder = Integer.MAX_VALUE;
     private int maxSortOrder = Integer.MIN_VALUE;
 
-    private int begOfCrossed = 2;
+    private int begOfCrossed = 0;
 
     private final Map<Integer, Goal> goals
             = new HashMap<>();
@@ -28,8 +28,8 @@ public class InMemoryDataSource {
     }
 
     public final static List<Goal> TEST_GOALS = List.of(
-            new Goal(0,"Thing1", 0, false),
-            new Goal(1,"Thing2", 1, false)
+//            new Goal(0,"Thing1", 0, false),
+//            new Goal(1,"Thing2", 1, false)
     );
 
     public static InMemoryDataSource fromDefault() {

@@ -24,6 +24,8 @@ public class MainViewModel extends ViewModel {
     // private final MutableSubject<Boolean> isCrossedOff;
     // private final MutableSubject<String> displayedText;
 
+    private MutableSubject<Boolean> isEmpty;
+
     public static final ViewModelInitializer<MainViewModel> initializer =
             new ViewModelInitializer<>(
                     MainViewModel.class,
@@ -38,6 +40,8 @@ public class MainViewModel extends ViewModel {
 
         // Create the observable subjects.
         this.orderedGoals = new SimpleSubject<>();
+        this.isEmpty = new SimpleSubject<>();
+        this.isEmpty.setValue(true);
         // this.isCrossedOff = new SimpleSubject<>();
         //this.displayedText = new SimpleSubject<>();
 
@@ -46,8 +50,11 @@ public class MainViewModel extends ViewModel {
 
         // When the list of cards changes (or is first loaded), reset the ordering.
         goalRepository.findAll().observe(goals -> {
-            if (goals == null) return; // not ready yet, ignore, placeholder text should be displayed
-
+            if (goals == null || goals.size() == 0) {
+                isEmpty.setValue(true);
+                return;
+            }; // not ready yet, ignore, placeholder text should be displayed
+            isEmpty.setValue(false);
             var newOrderedGoals = goals.stream()
                     .sorted(Comparator.comparingInt(Goal::sortOrder))
                     .map(GoalEntity::fromGoal)
@@ -70,7 +77,8 @@ public class MainViewModel extends ViewModel {
         goalRepository.prepend(goal);
     }
 
-    public void checkOff(int id) {
-        goalRepository.checkOff(id);
-    }
+    public void checkOff(int id) { goalRepository.checkOff(id); }
+
+    public Subject<Boolean> isEmpty() { return isEmpty; }
+
 }

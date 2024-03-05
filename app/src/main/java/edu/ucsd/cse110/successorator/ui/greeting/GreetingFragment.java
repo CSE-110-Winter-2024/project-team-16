@@ -12,7 +12,6 @@ import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.databinding.FragmentGreetingBinding;
 
 public class GreetingFragment extends Fragment {
-    private MainViewModel activityModel; // NEW FIELD
     private FragmentGreetingBinding view;
 
     public GreetingFragment() {
@@ -29,12 +28,6 @@ public class GreetingFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Initialize the Model
-        var modelOwner = requireActivity();
-        var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
-        var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
-        this.activityModel = modelProvider.get(MainViewModel.class);
     }
 
     @Override
