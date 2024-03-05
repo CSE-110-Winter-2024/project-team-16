@@ -178,9 +178,9 @@ public class RoomGoalRepository implements IGoalRepository {
     private Goal preInsert(Goal goal) {
         var id = goal.id();
         if (id == null) {
-
-            int maxId = goalDao.findAll().stream()
-                    .max(Comparator.comparing(e -> e.id)).get().id;
+            var goalWithMaxId = goalDao.findAll().stream()
+                    .max(Comparator.comparing(e -> e.id));
+            int maxId = goalWithMaxId.isPresent() ? goalWithMaxId.get().id : 0;
             nextId = maxId + 1;
             System.out.println("Next ID should be: " + nextId);
             goal = goal.withId(nextId);
