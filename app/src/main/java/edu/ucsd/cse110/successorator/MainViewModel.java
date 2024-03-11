@@ -73,4 +73,6 @@ public class MainViewModel extends ViewModel {
     public void checkOff(int id) {
         goalRepository.checkOff(id);
     }
+
+
 }

@@ -1,17 +1,24 @@
 package edu.ucsd.cse110.successorator;
 
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.HandlerThread;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 //import androidx.fragment.app.Fragment;
 
@@ -30,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int MILLIS_SECOND = 1000;
     private static final int TIME_TO_DELETE = 2;
 
+    private  HandlerThread timeHandler;
+    @SuppressLint({"SimpleDateFormat", "DefaultLocale"})
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +55,30 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setContentView(view.getRoot());
+
+       timeHandler = new HandlerThread("Handler Thread");
+       timeHandler.start();
+
+       long currentTime = System.currentTimeMillis();
+       String wantedTime = "02:00";
+
+        String dateTimeString = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date()) + " " + wantedTime;
+
+       SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+
+       Date mainTime;
+
+        try {
+            mainTime = dateFormat.parse(dateTimeString);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        long millis = mainTime.getTime() - currentTime;
+
+
+
+
     }
 
     @Override
@@ -188,4 +221,11 @@ public class MainActivity extends AppCompatActivity {
 //        incDate();
 //        return localDate;
 //    }
+
+
+
+    // Fragment dialog add date modifier (Chester Ramos)
+
+
+
 }

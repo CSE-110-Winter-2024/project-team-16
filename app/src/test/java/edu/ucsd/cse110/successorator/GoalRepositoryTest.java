@@ -18,17 +18,18 @@ public class GoalRepositoryTest {
     private InMemoryDataSource dataSource;
     private GoalRepository goalRepository;
     public final static List<Goal> TEST_GOALS = List.of(
-            new Goal(0,"Thing1", 0, false),
-            new Goal(1,"Thing2", 1, false),
-            new Goal(3,"Thing3", 3, false),
-            new Goal(4,"Thing4", 4, false)
+            new Goal(0,"Thing1", 0, false, "one_time"),
+            new Goal(1,"Thing2", 1, false,"daily"),
+            new Goal(3,"Thing3", 3, false,"weekly"),
+            new Goal(4,"Thing4", 4, false,"monthly"),
+            new Goal(5,"Thing5",5,false,"yearly")
     );
 
     public final static List<Goal> TEST_GOALS_FOR_DELETE = List.of(
-            new Goal(0,"Thing1", 0, false),
-            new Goal(1,"Thing2", 1, false),
-            new Goal(2,"Thing3", 3, false),
-            new Goal(3,"Thing4", 4, false)
+            new Goal(0,"Thing1", 0, false,"one_time"),
+            new Goal(1,"Thing2", 1, false,"one_time"),
+            new Goal(2,"Thing3", 3, false,"one_time"),
+            new Goal(3,"Thing4", 4, false,"one_time")
     );
 
     @Before
@@ -45,7 +46,7 @@ public class GoalRepositoryTest {
 
     @Test
     public void testFindExisting() {
-        Goal goal = new Goal(2, "Thing5", 5, false);
+        Goal goal = new Goal(2, "Thing5", 5, false, "one_time");
         goalRepository.save(goal);
         assertEquals(goal, goalRepository.find(2).getValue());
     }
@@ -63,7 +64,7 @@ public class GoalRepositoryTest {
 
     @Test
     public void testSave() {
-        Goal goal = new Goal(2, "Thing5", 5, false);
+        Goal goal = new Goal(2, "Thing5", 5, false,"one_time");
         goalRepository.save(goal);
         assertEquals(goal, goalRepository.find(2).getValue());
     }
@@ -78,7 +79,7 @@ public class GoalRepositoryTest {
 
     @Test
     public void testPrepend() {
-        Goal goal = new Goal(2, "Thing5", 3, false);
+        Goal goal = new Goal(2, "Thing5", 3, false,"one_time");
         goalRepository.prepend(goal);
         assertEquals(Integer.valueOf(0), goalRepository.find(2).getValue().sortOrder());
         assertEquals(Integer.valueOf(1), goalRepository.find(0).getValue().sortOrder());
@@ -117,5 +118,19 @@ public class GoalRepositoryTest {
         assertEquals(initialSize - 2, (int) goalRepository.count());
         assertEquals("Thing3", goalRepository.findAll().getValue().get(0).mit());
         assertEquals("Thing4", goalRepository.findAll().getValue().get(1).mit());
+    }
+
+    @Test
+    public void testReccurenceChecker() {
+
+        dataSource = new InMemoryDataSource();
+        dataSource.putGoals(TEST_GOALS);
+        goalRepository = new GoalRepository(dataSource);
+
+        assertEquals("one_time", goalRepository.findAll().getValue().get(0).recurrence());
+        assertEquals("daily", goalRepository.findAll().getValue().get(1).recurrence());
+        assertEquals("weekly", goalRepository.findAll().getValue().get(2).recurrence());
+        assertEquals("monthly", goalRepository.findAll().getValue().get(3).recurrence());
+        assertEquals("yearly", goalRepository.findAll().getValue().get(4).recurrence());
     }
 }

@@ -48,6 +48,7 @@ public interface GoalDao {
      * Get a list of all GoalEntities in the database.
      * @return The entire list of saved GoalEntities.
      */
+
     @Query("SELECT * FROM goals ORDER BY sort_order")
     List<GoalEntity> findAll();
 
@@ -120,7 +121,7 @@ public interface GoalDao {
     default int prepend(GoalEntity goal) {
         // Shift all the existing goals down the list by 1.
         shiftSortOrders(getMinSortOrder(), getMaxSortOrder(), 1);
-        var newGoal = new GoalEntity(goal.id, goal.mit, getMinSortOrder() - 1, goal.isCrossed);
+        var newGoal = new GoalEntity(goal.id, goal.mit, getMinSortOrder() - 1, goal.isCrossed, "one_time");
         return Math.toIntExact(insert(newGoal));
     }
 

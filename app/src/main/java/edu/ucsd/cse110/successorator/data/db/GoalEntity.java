@@ -26,11 +26,15 @@ public class GoalEntity {
     @ColumnInfo(name = "is_crossed")
     public boolean isCrossed;
 
-    GoalEntity(int id, @NonNull String mit, int sortOrder, boolean isCrossed) {
+    @ColumnInfo(name = "reccurence")
+    public String recurrence;
+
+    GoalEntity(int id, @NonNull String mit, int sortOrder, boolean isCrossed, String recurrence) {
         this.id = id;
         this.mit = mit;
         this.sortOrder = sortOrder;
         this.isCrossed = isCrossed;
+        this.recurrence = recurrence;
     }
 
     public static GoalEntity fromGoal(@NonNull Goal goal) {
@@ -38,13 +42,14 @@ public class GoalEntity {
         var goalEntity = new GoalEntity(Objects.requireNonNull(goal.id()),
                 Objects.requireNonNull(goal.mit()),
                 goal.sortOrder(),
-                goal.isCrossed()
+                goal.isCrossed(),
+                Objects.requireNonNull(goal.recurrence())
         );
         return goalEntity;
     }
 
     public @NonNull Goal toGoal() {
-        return new Goal(id, mit, sortOrder, isCrossed);
+        return new Goal(id, mit, sortOrder, isCrossed,recurrence);
     }
 
 }
