@@ -64,7 +64,7 @@ public class GoalRepositoryTest {
 
     @Test
     public void testSave() {
-        Goal goal = new Goal(2, "Thing5", 5, false,"one_time");
+        Goal goal = new Goal(2, "Thing5", 6, false,"one_time");
         goalRepository.save(goal);
         assertEquals(goal, goalRepository.find(2).getValue());
     }
