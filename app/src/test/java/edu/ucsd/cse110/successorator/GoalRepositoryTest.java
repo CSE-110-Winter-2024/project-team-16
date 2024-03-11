@@ -41,12 +41,12 @@ public class GoalRepositoryTest {
 
     @Test
     public void testCount() {
-        assertEquals(Integer.valueOf(4), goalRepository.count());
+        assertEquals(Integer.valueOf(5), goalRepository.count());
     }
 
     @Test
     public void testFindExisting() {
-        Goal goal = new Goal(2, "Thing5", 5, false, "one_time");
+        Goal goal = new Goal(2, "Thing5", 6, false, "one_time");
         goalRepository.save(goal);
         assertEquals(goal, goalRepository.find(2).getValue());
     }
@@ -54,12 +54,12 @@ public class GoalRepositoryTest {
     @Test
     public void testFindNonExisting() {
         goalRepository.find(5);
-        assertEquals(Integer.valueOf(4), goalRepository.count());
+        assertEquals(Integer.valueOf(5), goalRepository.count());
     }
 
     @Test
     public void testFindAll() {
-        assertEquals(4, goalRepository.findAll().getValue().size());
+        assertEquals(5, goalRepository.findAll().getValue().size());
     }
 
     @Test
