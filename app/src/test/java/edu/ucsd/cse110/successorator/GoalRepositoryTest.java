@@ -18,17 +18,17 @@ public class GoalRepositoryTest {
     private InMemoryDataSource dataSource;
     private GoalRepository goalRepository;
     public final static List<Goal> TEST_GOALS = List.of(
-            new Goal(0,"Thing1", 0, false, Goal.Frequency.ONETIME),
-            new Goal(1,"Thing2", 1, false, Goal.Frequency.WEEKLY),
-            new Goal(3,"Thing3", 3, false, Goal.Frequency.MONTHLY),
-            new Goal(4,"Thing4", 4, false, Goal.Frequency.YEARLY)
+            new Goal(0,"Thing1", 0, false, Goal.Frequency.ONETIME,Goal.GoalContext.HOME),
+            new Goal(1,"Thing2", 1, false, Goal.Frequency.WEEKLY,Goal.GoalContext.WORK),
+            new Goal(3,"Thing3", 3, false, Goal.Frequency.MONTHLY,Goal.GoalContext.SCHOOL),
+            new Goal(4,"Thing4", 4, false, Goal.Frequency.YEARLY, Goal.GoalContext.ERRANDS)
     );
 
     public final static List<Goal> TEST_GOALS_FOR_DELETE = List.of(
-            new Goal(0,"Thing1", 0, false, Goal.Frequency.ONETIME),
-            new Goal(1,"Thing2", 1, false, Goal.Frequency.ONETIME),
-            new Goal(2,"Thing3", 3, false, Goal.Frequency.ONETIME),
-            new Goal(3,"Thing4", 4, false, Goal.Frequency.ONETIME)
+            new Goal(0,"Thing1", 0, false, Goal.Frequency.ONETIME,Goal.GoalContext.HOME),
+            new Goal(1,"Thing2", 1, false, Goal.Frequency.ONETIME,Goal.GoalContext.HOME),
+            new Goal(2,"Thing3", 3, false, Goal.Frequency.ONETIME,Goal.GoalContext.HOME),
+            new Goal(3,"Thing4", 4, false, Goal.Frequency.ONETIME,Goal.GoalContext.HOME)
     );
 
     @Before
@@ -45,7 +45,7 @@ public class GoalRepositoryTest {
 
     @Test
     public void testFindExisting() {
-        Goal goal = new Goal(2, "Thing5", 5, false, Goal.Frequency.ONETIME);
+        Goal goal = new Goal(2, "Thing5", 5, false, Goal.Frequency.ONETIME,Goal.GoalContext.HOME);
         goalRepository.save(goal);
         assertEquals(goal, goalRepository.find(2).getValue());
     }
@@ -63,7 +63,7 @@ public class GoalRepositoryTest {
 
     @Test
     public void testSave() {
-        Goal goal = new Goal(2, "Thing5", 5, false, Goal.Frequency.ONETIME);
+        Goal goal = new Goal(2, "Thing5", 5, false, Goal.Frequency.ONETIME,Goal.GoalContext.HOME);
         goalRepository.save(goal);
         assertEquals(goal, goalRepository.find(2).getValue());
     }
@@ -78,7 +78,7 @@ public class GoalRepositoryTest {
 
     @Test
     public void testPrepend() {
-        Goal goal = new Goal(2, "Thing5", 3, false, Goal.Frequency.ONETIME);
+        Goal goal = new Goal(2, "Thing5", 3, false, Goal.Frequency.ONETIME,Goal.GoalContext.HOME);
         goalRepository.prepend(goal);
         assertEquals(Integer.valueOf(0), goalRepository.find(2).getValue().sortOrder());
         assertEquals(Integer.valueOf(1), goalRepository.find(0).getValue().sortOrder());
@@ -130,5 +130,17 @@ public class GoalRepositoryTest {
         assertEquals(Goal.Frequency.MONTHLY, goalRepository.findAll().getValue().get(2).frequency());
         assertEquals(Goal.Frequency.YEARLY, goalRepository.findAll().getValue().get(3).frequency());
 
+    }
+
+    @Test
+    public void testGoalContext(){
+        dataSource = new InMemoryDataSource();
+        dataSource.putGoals(TEST_GOALS);
+        goalRepository = new GoalRepository(dataSource);
+
+        assertEquals(Goal.GoalContext.HOME, goalRepository.findAll().getValue().get(0).goalContext());
+        assertEquals(Goal.GoalContext.WORK, goalRepository.findAll().getValue().get(1).goalContext());
+        assertEquals(Goal.GoalContext.SCHOOL, goalRepository.findAll().getValue().get(2).goalContext());
+        assertEquals(Goal.GoalContext.ERRANDS, goalRepository.findAll().getValue().get(3).goalContext());
     }
 }
