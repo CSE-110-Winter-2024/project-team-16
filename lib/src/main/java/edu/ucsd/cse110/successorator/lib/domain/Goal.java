@@ -15,21 +15,32 @@ public class Goal implements Serializable {
 
     private boolean isCrossed;
 
-    public enum Frequency {ONETIME, DAILY, WEEKLY, MONTHLY, YEARLY}
+    public enum Frequency {ONETIME, DAILY, WEEKLY, MONTHLY, YEARLY, PENDING}
 
     private Frequency frequency;
+
+
+
+    public enum GoalContext {HOME, WORK, SCHOOL, ERRANDS}
+
+    private GoalContext goalContext;
+
+
+
+
 
 
     public Goal(
             @Nullable Integer id,
             @Nullable String mit,
             @NotNull Integer sortOrder,
-            boolean isCrossed, @NonNull Frequency frequency) {
+            boolean isCrossed, @NonNull Frequency frequency, @NonNull GoalContext goalContext) {
         this.id = id;
         this.mit = mit;
         this.sortOrder = sortOrder;
         this.isCrossed = isCrossed;
         this.frequency = frequency;
+        this.goalContext = goalContext;
     }
 
     @Nullable
@@ -49,16 +60,17 @@ public class Goal implements Serializable {
 
     public boolean isCrossed() { return isCrossed; }
 
-    public Frequency frequency() {return frequency; };
+    public Frequency frequency() {return frequency; }
 
+    public GoalContext goalContext() {return goalContext; }
     public void toggle() { isCrossed = !isCrossed; }
 
     public Goal withId(int id) {
-        return new Goal(id, this.mit(), this.sortOrder(), this.isCrossed, this.frequency);
+        return new Goal(id, this.mit(), this.sortOrder(), this.isCrossed, this.frequency,this.goalContext);
     }
 
     public Goal withSortOrder(int sortOrder) {
-        return new Goal(this.id(), this.mit(), sortOrder, this.isCrossed, this.frequency);
+        return new Goal(this.id(), this.mit(), sortOrder, this.isCrossed, this.frequency,this.goalContext);
     }
 
     @Override
@@ -67,11 +79,11 @@ public class Goal implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Goal goal = (Goal) o;
         return Objects.equals(id, goal.id) && Objects.equals(mit, goal.mit) && Objects.equals(sortOrder, goal.sortOrder) && (isCrossed == goal.isCrossed()
-        && Objects.equals(frequency,goal.frequency));
+        && Objects.equals(frequency,goal.frequency) && Objects.equals(goalContext, goal.goalContext));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, mit, sortOrder, isCrossed,frequency);
+        return Objects.hash(id, mit, sortOrder, isCrossed,frequency,goalContext);
     }
 }

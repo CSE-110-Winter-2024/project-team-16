@@ -4,7 +4,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,6 +55,11 @@ public class MainActivity extends AppCompatActivity {
             addGoal();
         } else if (itemId == R.id.action_bar_increment_date) {
             incDate();
+        }
+
+        //For dropdown menu
+        else if (itemId == R.id.v_dropdown) {
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -160,4 +168,17 @@ public class MainActivity extends AppCompatActivity {
 //        incDate();
 //        return localDate;
 //    }
+
+
+
+
+    private void dropDown(View view){
+        PopupMenu dropDown = new PopupMenu(this,view);
+        MenuInflater inflater = dropDown.getMenuInflater();
+
+        inflater.inflate(R.menu.action_bar, dropDown.getMenu());
+
+
+    }
+
 }
