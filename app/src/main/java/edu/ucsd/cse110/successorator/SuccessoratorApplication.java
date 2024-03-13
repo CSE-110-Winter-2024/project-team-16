@@ -6,9 +6,15 @@ import android.content.SharedPreferences;
 import androidx.lifecycle.MutableLiveData;
 import androidx.room.Room;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.Calendar;
+import java.util.Date;
 
 import edu.ucsd.cse110.successorator.data.db.RoomGoalRepository;
 import edu.ucsd.cse110.successorator.data.db.SuccessoratorDatabase;
@@ -21,7 +27,7 @@ public class SuccessoratorApplication extends Application {
     private InMemoryDataSource dataSource;
     private IGoalRepository goalRepository;
     private SharedPreferences mockedDate;
-    private MutableLiveData<Long> mockedDateLive = new MutableLiveData<>();
+    private MutableLiveData<String> mockedDateLive = new MutableLiveData<>();
     private static final int TIME_TO_DELETE = 2;
 
     @Override
@@ -52,15 +58,19 @@ public class SuccessoratorApplication extends Application {
         }
 
         mockedDate = getSharedPreferences("mockedDate", MODE_PRIVATE);
-        mockedDateLive.setValue(mockedDate.getLong("mockedTime", 0L));
+        mockedDateLive.setValue(mockedDate.getString("mockedTime", "0001-01-01 00:00:00"));
 
         mockedDate.registerOnSharedPreferenceChangeListener((sharedPrefs, key) -> {
             if ("mockedTime".equals(key)) {
-                mockedDateLive.postValue(sharedPrefs.getLong(key, 0L));
-                deleteCrossedGoals();
+                mockedDateLive.postValue(sharedPrefs.getString(key, "0001-01-01 00:00:00"));
+                callDeleteDecision();
             }
         });
 
+        callDeleteDecision();
+    }
+
+    private void callDeleteDecision(){
         if (deleteCrossedGoalsNotExecutedToday()) {
             deleteCrossedGoals();
         }
@@ -70,70 +80,55 @@ public class SuccessoratorApplication extends Application {
         return goalRepository;
     }
 
-    private LocalDate calendarToDate(Calendar calendar) {
-        return LocalDate.of(
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH) + 1,
-                calendar.get(Calendar.DAY_OF_MONTH)
-        );
+    private LocalDateTime stringToDateTime(String dateString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return LocalDateTime.parse(dateString, formatter);
     }
 
-    private Calendar getExecutedCalendar() {
-        long executedTime = mockedDate.getLong("lastExecution", 0L);
-        Calendar lastExecutionCalendar = Calendar.getInstance();
-        lastExecutionCalendar.setTimeInMillis(executedTime);
-        return lastExecutionCalendar;
+    private LocalDateTime getExecutedDateTime(){
+        String executedTime = mockedDate.getString("lastExecution", "0001-01-01 00:00:00");
+        return stringToDateTime(executedTime);
     }
 
-    private Calendar getMockedCalendar() {
-        //long mockedTime = mockedDate.getLong("modifiedTime", 0L);
-        long mockedTime = mockedDateLive.getValue();
-        Calendar mockedCalendar = Calendar.getInstance();
-        mockedCalendar.setTimeInMillis(mockedTime);
-        return mockedCalendar;
+    private LocalDateTime getMockedDateTime(){
+        String mockedTime = mockedDateLive.getValue();
+        return stringToDateTime(mockedTime);
     }
 
-    private boolean executedBefore2AM() {
-        return getExecutedCalendar().get(Calendar.HOUR_OF_DAY) < TIME_TO_DELETE;
+    private boolean executedBefore2AM(){
+        return getExecutedDateTime().getHour() < TIME_TO_DELETE;
     }
 
-    private boolean mockedBefore2AM() {
-        return getMockedCalendar().get(Calendar.HOUR_OF_DAY) < TIME_TO_DELETE;
+    private boolean mockedBefore2AM(){
+        return getMockedDateTime().getHour() < TIME_TO_DELETE;
     }
 
-    private boolean executedDateBefore() {
-        return calendarToDate(getExecutedCalendar()).isBefore(calendarToDate(getMockedCalendar()));
+    private boolean executedDateBefore(){
+        return getExecutedDateTime().toLocalDate().isBefore(getMockedDateTime().toLocalDate());
     }
 
-    private long executedDaysBefore() {
-        return ChronoUnit.DAYS
-                .between(calendarToDate(getExecutedCalendar()), calendarToDate(getMockedCalendar()));
+    private int executedDaysBefore(){
+        return getMockedDateTime().getDayOfYear() - getExecutedDateTime().getDayOfYear();
     }
 
-    public boolean deleteCrossedGoalsNotExecutedToday() {
-        long executedTime = mockedDate.getLong("lastExecution", 0L);
-        Calendar lastExecutionCalendar = Calendar.getInstance();
-        lastExecutionCalendar.setTimeInMillis(executedTime);
-        long mockedTime = mockedDate.getLong("mockedTime", 0L);
-        Calendar mockedCalendar = Calendar.getInstance();
-        mockedCalendar.setTimeInMillis(mockedTime);
-        if (calendarToDate(lastExecutionCalendar).isBefore(calendarToDate(mockedCalendar))) {
-            return true;
+    public boolean deleteCrossedGoalsNotExecutedToday(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//        goalRepository.append(new Goal(1, formatter.format(getMockedDateTime()), 2, false, Goal.Frequency.ONETIME));
+//        goalRepository.append(new Goal(8, formatter.format(getExecutedDateTime()), 3, false, Goal.Frequency.ONETIME));
+
+        if (executedBefore2AM()) {
+            return !mockedBefore2AM() || executedDateBefore();
+        } else {
+            return (mockedBefore2AM() && (executedDaysBefore() > 1)) ||
+                    (!mockedBefore2AM() && executedDateBefore());
         }
-//        if (executedBefore2AM()) {
-//            return !mockedBefore2AM() || executedDateBefore();
-//        } else {
-//            return (mockedBefore2AM() && (executedDaysBefore() > 1)) ||
-//                    (!mockedBefore2AM() && executedDateBefore());
-//        }
-        return false;
     }
 
     private void deleteCrossedGoals() {
         goalRepository.deleteCrossedGoals();
 
         //Update the record of last deletion execution
-        long mockedTime = mockedDate.getLong("mockedTime", 0L);
-        mockedDate.edit().putLong("lastExecution", mockedTime).apply();
+        String mockedTime = mockedDate.getString("mockedTime", "0001-01-01 00:00:00");
+        mockedDate.edit().putString("lastExecution", mockedTime).apply();
     }
 }

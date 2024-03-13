@@ -10,6 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
@@ -23,7 +25,7 @@ import edu.ucsd.cse110.successorator.ui.dialog.AddGoalDialogFragment;
 
 public class MainActivity extends AppCompatActivity {
     private SharedPreferences mockedDate;
-    public LocalDate localDate;
+    public Calendar calendar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -95,10 +97,10 @@ public class MainActivity extends AppCompatActivity {
      * @author Yubing Lin
      */
     private void setDate() {
-        localDate = LocalDate.now();
+        calendar = Calendar.getInstance();
 
         //Format the date as "Weekday MM/DD"
-        formatDate(localDate);
+        formatDate(calendar);
     }
 
     /**
@@ -107,29 +109,34 @@ public class MainActivity extends AppCompatActivity {
      * @author Yubing Lin
      */
     private void incDate() {
-        localDate = localDate.plusDays(1);
-        formatDate(localDate);
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        formatDate(calendar);
     }
 
     /**
      * Set the date in the format of "Weekday MM/DD"
      *
-     * @param date the date to be set as title
+     * @param calendar the date to be set as title
      * @author Yubing Lin
      */
-    private void formatDate(LocalDate date) {
+    private void formatDate(Calendar calendar) {
         //From ChatGPT, formatting the date as designed pattern
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE M/d");
-        String formattedDate = date.format(formatter);
+        DateFormatSymbols dfs = new DateFormatSymbols();
+        String[] weekdays = dfs.getWeekdays();
+        String weekday = weekdays[calendar.get(Calendar.DAY_OF_WEEK)];
+
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
+        String formattedDate = weekday + " " + sdf.format(calendar.getTime());
         setTitle(formattedDate);
 
-        updateShared(date);
+        updateShared(calendar);
     }
 
-    private void updateShared(LocalDate date) {
-        long currentTimestamp = date.toEpochDay();
+    private void updateShared(Calendar calendar) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateString = sdf.format(calendar.getTime());
 
-        mockedDate.edit().putLong("mockedTime", currentTimestamp).apply();
+        mockedDate.edit().putString("mockedTime",dateString).apply();
     }
 
 
