@@ -4,13 +4,20 @@
     <item android:id="@+id/action_bar_menu_add_goal"
         android:title="Add Goal"
         android:icon="@drawable/ic_add"
-        android:orderInCategory="2"
+        android:orderInCategory="3"
         app:iconTint="@color/white"
         app:showAsAction="always" />
     <item android:id="@+id/action_bar_increment_date"
         android:title="Inc Date"
         android:icon="@drawable/ic_next"
+        android:orderInCategory="2"
+        app:iconTint="@color/white"
+        app:showAsAction="always" />
+    <item android:id="@+id/v_dropdown"
+        android:title="v dropdown"
+        android:icon="@drawable/v_icon"
         android:orderInCategory="1"
         app:iconTint="@color/white"
         app:showAsAction="always" />
+
 </menu>
