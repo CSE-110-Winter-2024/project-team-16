@@ -1,5 +1,6 @@
 package edu.ucsd.cse110.successorator;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
@@ -21,29 +22,16 @@ import edu.ucsd.cse110.successorator.databinding.ActivityMainBinding;
 import edu.ucsd.cse110.successorator.ui.dialog.AddGoalDialogFragment;
 
 public class MainActivity extends AppCompatActivity {
-    private LocalDate localDate;
-    //private TimeManager timeManager;
-    private SharedPreferences sharedPreferences;
-    private static final int HOURS_DAY = 24;
-    private static final int MINS_HOUR = 60;
-    private static final int SECONDS_MIN = 60;
-    private static final int MILLIS_SECOND = 1000;
-    private static final int TIME_TO_DELETE = 2;
+    private SharedPreferences mockedDate;
+    public LocalDate localDate;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mockedDate = getSharedPreferences("mockedDate", Context.MODE_PRIVATE);
         setDate();
         var view = ActivityMainBinding.inflate(getLayoutInflater(), null, false);
         //view.placeholderText.setText(R.string.empty_list_greeting);
-
-        //timeManager = new TimeManager(this);
-        sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-
-        // Execute deleteCrossedGoals() if requirements met
-        if (deleteCrossedGoalsNotExecutedToday()) {
-            executeDeleteCrossedGoals();
-        }
 
         setContentView(view.getRoot());
     }
@@ -134,39 +122,16 @@ public class MainActivity extends AppCompatActivity {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE M/d");
         String formattedDate = date.format(formatter);
         setTitle(formattedDate);
+
+        updateShared(date);
     }
 
-    private boolean deleteCrossedGoalsNotExecutedToday() {
-        // Get the timestamp and date for the last execution of deletion
-        long lastExecutionTimestamp = sharedPreferences.getLong("lastExecution", 0L);
-        Calendar lastExecutionCalendar = Calendar.getInstance();
-        lastExecutionCalendar.setTimeInMillis(lastExecutionTimestamp);
-        int lastExecutedHour = lastExecutionCalendar.get(Calendar.HOUR_OF_DAY);
-        int lastExecutedDate = lastExecutionCalendar.get(Calendar.DAY_OF_YEAR);
+    private void updateShared(LocalDate date) {
+        long currentTimestamp = date.toEpochDay();
 
-        //Get the current date and hour
-        Calendar currentCalendar = Calendar.getInstance();
-        int currentHour = currentCalendar.get(Calendar.HOUR_OF_DAY);
-        int currentDate = currentCalendar.get(Calendar.DAY_OF_YEAR);
-
-        //Check whether deletion should be executed
-        boolean executedOneDayBefore = (System.currentTimeMillis() - lastExecutionTimestamp) >=
-                HOURS_DAY * MINS_HOUR * SECONDS_MIN * MILLIS_SECOND;
-        boolean executedBefore2AM = lastExecutedHour < TIME_TO_DELETE;
-        boolean openAfter2AM = currentHour >= TIME_TO_DELETE;
-
-        return executedOneDayBefore || (lastExecutedDate != currentDate) ||
-                (executedBefore2AM && openAfter2AM);
+        mockedDate.edit().putLong("mockedTime", currentTimestamp).apply();
     }
 
-    private void executeDeleteCrossedGoals() {
-        // Get the GoalRepository stored in dataset here and call deleteCrossedGoals()
-
-
-        // Update the flag to indicate execution
-        long executionTimeStamp = System.currentTimeMillis();
-        sharedPreferences.edit().putLong("lastExecution", executionTimeStamp).apply();
-    }
 
 //    /**
 //     * Getter for testing

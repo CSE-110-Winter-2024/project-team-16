@@ -2,9 +2,19 @@ package edu.ucsd.cse110.successorator;
 
 import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +33,11 @@ public class MainViewModel extends ViewModel {
     private final MutableSubject<List<GoalEntity>> orderedGoals;
     // private final MutableSubject<Boolean> isCrossedOff;
     // private final MutableSubject<String> displayedText;
+    //private TimeManager timeManager;
+    private SharedPreferences mockedDate;
+    private MutableLiveData<Long> sharedPrefLiveData = new MutableLiveData<>();
+    //private LocalDate mockedDate;
+    private static final int TIME_TO_DELETE = 2;
 
     public static final ViewModelInitializer<MainViewModel> initializer =
             new ViewModelInitializer<>(
@@ -30,11 +45,14 @@ public class MainViewModel extends ViewModel {
                     creationExtras -> {
                         var app = (SuccessoratorApplication) creationExtras.get(APPLICATION_KEY);
                         assert app != null;
-                        return new MainViewModel(app.getGoalRepository());
+                        return new MainViewModel(app.getGoalRepository(), app.getApplicationContext());
                     });
 
-    public MainViewModel(IGoalRepository goalRepository) {
+    public MainViewModel(IGoalRepository goalRepository, Context context) {
         this.goalRepository = goalRepository;
+        this.mockedDate = context.getApplicationContext()
+                                       .getSharedPreferences("mockedDate", Context.MODE_PRIVATE);
+        sharedPrefLiveData.setValue(mockedDate.getLong("mockedTime", 0L));
 
         // Create the observable subjects.
         this.orderedGoals = new SimpleSubject<>();
@@ -56,6 +74,15 @@ public class MainViewModel extends ViewModel {
             orderedGoals.setValue(newOrderedGoals);
         });
 
+        mockedDate.registerOnSharedPreferenceChangeListener((sharedPrefs, key) -> {
+            if ("mockedTime".equals(key)) {
+                sharedPrefLiveData.postValue(sharedPrefs.getLong(key, 0L));
+            }
+        });
+
+        if (deleteCrossedGoalsNotExecutedToday()) {
+            deleteCrossedGoals();
+        }
     }
 
     public Subject<List<GoalEntity>> getOrderedGoals() {
@@ -72,5 +99,61 @@ public class MainViewModel extends ViewModel {
 
     public void checkOff(int id) {
         goalRepository.checkOff(id);
+    }
+
+    private LocalDate calendarToDate(Calendar calendar) {
+        return LocalDate.of(
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DAY_OF_MONTH)
+        );
+    }
+
+    private Calendar getExecutedCalendar() {
+        long executedTime = mockedDate.getLong("lastExecution", 0L);
+        Calendar lastExecutionCalendar = Calendar.getInstance();
+        lastExecutionCalendar.setTimeInMillis(executedTime);
+        return lastExecutionCalendar;
+    }
+
+    private Calendar getMockedCalendar() {
+        long mockedTime = sharedPrefLiveData.getValue();
+        Calendar mockedCalendar = Calendar.getInstance();
+        mockedCalendar.setTimeInMillis(mockedTime);
+        return mockedCalendar;
+    }
+
+    private boolean executedBefore2AM() {
+        return getExecutedCalendar().get(Calendar.HOUR_OF_DAY) < TIME_TO_DELETE;
+    }
+
+    private boolean mockedBefore2AM() {
+        return getMockedCalendar().get(Calendar.HOUR_OF_DAY) < TIME_TO_DELETE;
+    }
+
+    private boolean executedDateBefore() {
+        return calendarToDate(getExecutedCalendar()).isBefore(calendarToDate(getMockedCalendar()));
+    }
+
+    private long executedDaysBefore() {
+        return ChronoUnit.DAYS
+                .between(calendarToDate(getExecutedCalendar()), calendarToDate(getMockedCalendar()));
+    }
+
+    public boolean deleteCrossedGoalsNotExecutedToday() {
+        if (executedBefore2AM()) {
+            return !mockedBefore2AM() || executedDateBefore();
+        } else {
+            return (mockedBefore2AM() && (executedDaysBefore() > 1)) ||
+                    (!mockedBefore2AM() && executedDateBefore());
+        }
+    }
+
+    private void deleteCrossedGoals() {
+        goalRepository.deleteCrossedGoals();
+
+        //Update the record of last deletion execution
+        long mockedTime = mockedDate.getLong("mockedTime", 0L);
+        mockedDate.edit().putLong("lastExecution", mockedTime).apply();
     }
 }
