@@ -120,7 +120,7 @@ public interface GoalDao {
     default int prepend(GoalEntity goal) {
         // Shift all the existing goals down the list by 1.
         shiftSortOrders(getMinSortOrder(), getMaxSortOrder(), 1);
-        var newGoal = new GoalEntity(goal.id, goal.mit, getMinSortOrder() - 1, goal.isCrossed);
+        var newGoal = new GoalEntity(goal.id, goal.mit, getMinSortOrder() - 1, goal.isCrossed, goal.frequency);
         return Math.toIntExact(insert(newGoal));
     }
 
