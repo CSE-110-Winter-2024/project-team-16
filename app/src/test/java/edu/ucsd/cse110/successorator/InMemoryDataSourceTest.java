@@ -28,10 +28,10 @@ public class InMemoryDataSourceTest {
     @Test
     public void testDeleteAllGoals() {
         int initialSize = dataSource.getGoals().size();
-        assertEquals(2, initialSize);
+        assertEquals(5, initialSize);
         dataSource.deleteGoal(1);
         dataSource.deleteGoal(0);
-        assertEquals(0, dataSource.getGoals().size());
+        assertEquals(3, dataSource.getGoals().size());
         assertNull(dataSource.getGoal(1));
         assertNull(dataSource.getGoal(0));
     }
@@ -39,7 +39,7 @@ public class InMemoryDataSourceTest {
     @Test
     public void testDeleteNonExistingGoal() {
         int initialSize = dataSource.getGoals().size();
-        dataSource.deleteGoal(3);
+        dataSource.deleteGoal(7);
         assertEquals(initialSize, dataSource.getGoals().size());
     }
 }

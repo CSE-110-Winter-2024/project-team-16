@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.Assert.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import edu.ucsd.cse110.successorator.lib.data.InMemoryDataSource;
@@ -18,18 +20,28 @@ public class GoalRepositoryTest {
     private InMemoryDataSource dataSource;
     private GoalRepository goalRepository;
     public final static List<Goal> TEST_GOALS = List.of(
-            new Goal(0,"Thing1", 0, false, Goal.Frequency.ONETIME,Goal.GoalContext.HOME),
-            new Goal(1,"Thing2", 1, false, Goal.Frequency.WEEKLY,Goal.GoalContext.WORK),
-            new Goal(3,"Thing3", 3, false, Goal.Frequency.MONTHLY,Goal.GoalContext.SCHOOL),
-            new Goal(4,"Thing4", 4, false, Goal.Frequency.YEARLY, Goal.GoalContext.ERRANDS)
+            new Goal(0,"Thing1", 0, false, Goal.Frequency.ONETIME, calendarToString(), Goal.GoalContext.HOME, true),
+            new Goal(1,"Thing2", 1, false, Goal.Frequency.WEEKLY,calendarToString(), Goal.GoalContext.WORK, true),
+            new Goal(3,"Thing3", 3, false, Goal.Frequency.MONTHLY,calendarToString(), Goal.GoalContext.SCHOOL, false),
+            new Goal(4,"Thing4", 4, false, Goal.Frequency.YEARLY,calendarToString(), Goal.GoalContext.ERRANDS, false)
     );
 
     public final static List<Goal> TEST_GOALS_FOR_DELETE = List.of(
-            new Goal(0,"Thing1", 0, false, Goal.Frequency.ONETIME,Goal.GoalContext.HOME),
-            new Goal(1,"Thing2", 1, false, Goal.Frequency.ONETIME,Goal.GoalContext.HOME),
-            new Goal(2,"Thing3", 3, false, Goal.Frequency.ONETIME,Goal.GoalContext.HOME),
-            new Goal(3,"Thing4", 4, false, Goal.Frequency.ONETIME,Goal.GoalContext.HOME)
+            new Goal(0,"Thing1", 0, false, Goal.Frequency.ONETIME, calendarToString(), Goal.GoalContext.HOME, true),
+            new Goal(1,"Thing2", 1, false, Goal.Frequency.WEEKLY,calendarToString(), Goal.GoalContext.WORK, true),
+            new Goal(3,"Thing3", 3, false, Goal.Frequency.MONTHLY,calendarToString(), Goal.GoalContext.SCHOOL, false),
+            new Goal(4,"Thing4", 4, false, Goal.Frequency.YEARLY,calendarToString(), Goal.GoalContext.ERRANDS, false)
     );
+
+    public static String calendarToString() {
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        // Define the desired date-time format
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        // Format the LocalDateTime object using the formatter
+        return dateTime.format(formatter);
+    }
 
     @Before
     public void setUp() {
@@ -45,7 +57,7 @@ public class GoalRepositoryTest {
 
     @Test
     public void testFindExisting() {
-        Goal goal = new Goal(2, "Thing5", 5, false, Goal.Frequency.ONETIME,Goal.GoalContext.HOME);
+        Goal goal = new Goal(2, "Thing5", 5, false, Goal.Frequency.ONETIME,calendarToString(), Goal.GoalContext.HOME, true);
         goalRepository.save(goal);
         assertEquals(goal, goalRepository.find(2).getValue());
     }
@@ -63,7 +75,7 @@ public class GoalRepositoryTest {
 
     @Test
     public void testSave() {
-        Goal goal = new Goal(2, "Thing5", 5, false, Goal.Frequency.ONETIME,Goal.GoalContext.HOME);
+        Goal goal = new Goal(2, "Thing5", 5, false, Goal.Frequency.ONETIME,calendarToString(), Goal.GoalContext.HOME, true);
         goalRepository.save(goal);
         assertEquals(goal, goalRepository.find(2).getValue());
     }
@@ -78,7 +90,7 @@ public class GoalRepositoryTest {
 
     @Test
     public void testPrepend() {
-        Goal goal = new Goal(2, "Thing5", 3, false, Goal.Frequency.ONETIME,Goal.GoalContext.HOME);
+        Goal goal = new Goal(2, "Thing5", 3, false, Goal.Frequency.ONETIME,calendarToString(), Goal.GoalContext.HOME, true);
         goalRepository.prepend(goal);
         assertEquals(Integer.valueOf(0), goalRepository.find(2).getValue().sortOrder());
         assertEquals(Integer.valueOf(1), goalRepository.find(0).getValue().sortOrder());
@@ -114,9 +126,9 @@ public class GoalRepositoryTest {
         int initialSize = goalRepository.count();
         goalRepository.deleteCrossedGoals();
 
-        assertEquals(initialSize - 2, (int) goalRepository.count());
-        assertEquals("Thing3", goalRepository.findAll().getValue().get(0).mit());
-        assertEquals("Thing4", goalRepository.findAll().getValue().get(1).mit());
+        assertEquals(initialSize-1, (int) goalRepository.count());
+        assertEquals("Thing2", goalRepository.findAll().getValue().get(0).mit());
+        assertEquals("Thing3", goalRepository.findAll().getValue().get(1).mit());
     }
 
     @Test

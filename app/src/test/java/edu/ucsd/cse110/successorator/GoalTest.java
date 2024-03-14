@@ -10,11 +10,23 @@ import edu.ucsd.cse110.successorator.lib.data.InMemoryDataSource;
 import edu.ucsd.cse110.successorator.lib.domain.Goal;
 import edu.ucsd.cse110.successorator.lib.domain.GoalRepository;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class GoalTest {
-    private Goal goalOne = new Goal(0,"Thing1", 0, false, Goal.Frequency.ONETIME,Goal.GoalContext.HOME);
-    private Goal goalTwo = new Goal(1,"Thing2", 1, false, Goal.Frequency.ONETIME,Goal.GoalContext.HOME);
+    private Goal goalOne = new Goal(0,"Thing1", 0, false, Goal.Frequency.ONETIME,calendarToString(), Goal.GoalContext.HOME, true);
+    private Goal goalTwo = new Goal(1,"Thing2", 1, false, Goal.Frequency.ONETIME,calendarToString(), Goal.GoalContext.HOME, true);
+
+    public static String calendarToString() {
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        // Define the desired date-time format
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        // Format the LocalDateTime object using the formatter
+        return dateTime.format(formatter);
+    }
 
     @Test
     public void testToggle() {
@@ -67,8 +79,8 @@ public class GoalTest {
 
     @Test
     public void testEqualsSameValue() {
-        Goal goalThree = new Goal(0,"Thing1", 0, false, Goal.Frequency.ONETIME,Goal.GoalContext.HOME);
-        Goal goalFour = new Goal(1, "Thing1", 0, false,Goal.Frequency.ONETIME,Goal.GoalContext.HOME);
+        Goal goalThree = new Goal(0,"Thing1", 0, false, Goal.Frequency.ONETIME,calendarToString(), Goal.GoalContext.HOME, true);
+        Goal goalFour = new Goal(1, "Thing1", 0, false,Goal.Frequency.ONETIME,calendarToString(), Goal.GoalContext.HOME, true);
         assertTrue(goalOne.equals(goalThree));
         assertFalse(goalOne.equals(goalFour));
     }
@@ -82,7 +94,7 @@ public class GoalTest {
 
     @Test
     public void testHash() {
-        int hashGoalOne = Objects.hash(goalOne.id(), goalOne.mit(), goalOne.sortOrder(), goalOne.isCrossed(), goalOne.frequency(),goalOne.goalContext());
+        int hashGoalOne = Objects.hash(goalOne.id(), goalOne.mit(), goalOne.sortOrder(), goalOne.isCrossed(), goalOne.frequency(),goalOne.recurStart(), goalOne.goalContext(), goalOne.isActive());
         assertEquals(hashGoalOne, goalOne.hashCode());
         assertNotEquals(hashGoalOne, goalTwo.hashCode());
     }
