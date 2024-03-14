@@ -22,9 +22,12 @@ public class RoomGoalRepository implements IGoalRepository {
     private final GoalDao goalDao;
 
     private int nextId = 0;
-    private int topOfFinished = 2;
-    private int minSortOrder = Integer.MAX_VALUE;
-    private int maxSortOrder = Integer.MIN_VALUE;
+    private int topOfFinished = 4;
+    private int begOfWork = 1;
+    private int begOfSchool = 2;
+    private int begOfErrands = 3;
+    private int minSortOrder = 0;
+    private int maxSortOrder = 3;
 
     public RoomGoalRepository(GoalDao goalDao) {
         this.goalDao = goalDao;
@@ -95,10 +98,36 @@ public class RoomGoalRepository implements IGoalRepository {
     @Override
     public void append(Goal goal) {
         var fixedGoal = preInsert(goal);
-        //postInsert();
-        //fixedGoal = fixedGoal.withSortOrder(goalDao.getMaxSortOrder()+1);
-        System.out.println("New Goal ID: " + fixedGoal.id());
-        goalDao.append(GoalEntity.fromGoal(fixedGoal));
+        postInsert();
+//        fixedGoal = fixedGoal.withSortOrder(goalDao.getMaxSortOrder()+1);
+//        System.out.println("New Goal ID: " + fixedGoal.id());
+        switch(goal.goalContext()) {
+            case HOME:
+                goalDao.shiftSortOrders(begOfWork, maxSortOrder, 1);
+                goalDao.append(GoalEntity.fromGoal(fixedGoal.withSortOrder(begOfWork)));
+                begOfWork++;
+                begOfSchool++;
+                begOfErrands++;
+                break;
+            case WORK:
+                goalDao.shiftSortOrders(begOfSchool, maxSortOrder, 1);
+                goalDao.append(GoalEntity.fromGoal(fixedGoal.withSortOrder(begOfSchool)));
+                begOfSchool++;
+                begOfErrands++;
+                break;
+            case SCHOOL:
+                goalDao.shiftSortOrders(begOfErrands, maxSortOrder, 1);
+                goalDao.append(GoalEntity.fromGoal(fixedGoal.withSortOrder(begOfErrands)));
+                begOfErrands++;
+                break;
+            case ERRANDS:
+                goalDao.shiftSortOrders(topOfFinished, maxSortOrder, 1);
+                goalDao.append(GoalEntity.fromGoal(fixedGoal.withSortOrder(topOfFinished)));
+                break;
+        }
+        //shiftSortOrders(begOfCrossed, maxSortOrder, 1);
+        //putGoal(goal.withSortOrder(begOfCrossed));
+        topOfFinished++;
     }
 
     /**
@@ -142,12 +171,55 @@ public class RoomGoalRepository implements IGoalRepository {
             System.out.println("crossed off at position " + newGoalEntity.sortOrder);
             // Add it to the list.
             goalDao.append(newGoalEntity);
+            switch(newGoalEntity.goalContext) {
+                case HOME:
+                    begOfWork--;
+                    begOfSchool--;
+                    begOfErrands--;
+                    break;
+                case WORK:
+                    begOfSchool--;
+                    begOfErrands--;
+                    break;
+                case SCHOOL:
+                    begOfErrands--;
+                    break;
+                case ERRANDS:
+                    break;
+            }
+            topOfFinished--;
         }
         else {
             // Add the new goal to the top of the list.
+            //no, add to its context
             System.out.println("not crossed off.");
+            switch(newGoalEntity.goalContext) {
+                case HOME:
+                    goalDao.shiftSortOrders(begOfWork, newGoalEntity.sortOrder -1, 1);
+                    goalDao.append(GoalEntity.fromGoal(newGoalEntity.toGoal().withSortOrder(begOfWork)));
+                    begOfWork++;
+                    begOfSchool++;
+                    begOfErrands++;
+                    break;
+                case WORK:
+                    goalDao.shiftSortOrders(begOfSchool, newGoalEntity.sortOrder -1, 1);
+                    goalDao.append(GoalEntity.fromGoal(newGoalEntity.toGoal().withSortOrder(begOfSchool)));
+                    begOfSchool++;
+                    begOfErrands++;
+                    break;
+                case SCHOOL:
+                    goalDao.shiftSortOrders(begOfErrands, newGoalEntity.sortOrder -1, 1);
+                    goalDao.append(GoalEntity.fromGoal(newGoalEntity.toGoal().withSortOrder(begOfErrands)));
+                    begOfErrands++;
+                    break;
+                case ERRANDS:
+                    goalDao.shiftSortOrders(topOfFinished, newGoalEntity.sortOrder -1, 1);
+                    goalDao.append(GoalEntity.fromGoal(newGoalEntity.toGoal().withSortOrder(topOfFinished)));
+                    break;
+            }
+            topOfFinished++;
             // newGoalEntity.sortOrder = topOfFinished; After closer inspection, this isn't needed.
-            goalDao.prepend(newGoalEntity);
+           // goalDao.prepend(newGoalEntity);
         }
     }
 
@@ -189,6 +261,13 @@ public class RoomGoalRepository implements IGoalRepository {
             nextId = id + 1;
         }
         return goal;
+    }
+
+    private void postInsert() {
+        // Keep the min and max sort orders up to date.
+        minSortOrder = goalDao.getMinSortOrder();
+
+        maxSortOrder = goalDao.getMaxSortOrder();
     }
 
     /**

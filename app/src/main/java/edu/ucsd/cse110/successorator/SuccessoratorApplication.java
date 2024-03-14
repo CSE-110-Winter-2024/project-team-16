@@ -40,6 +40,7 @@ public class SuccessoratorApplication extends Application {
                     .putBoolean("isFirstRun", false)
                     .apply();
         }
+        //this.goalRepository = new GoalRepository(dataSource); //added
     }
 
     public IGoalRepository getGoalRepository() {
