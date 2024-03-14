@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -33,7 +34,6 @@ public class GoalListAdapter extends ArrayAdapter<GoalEntity> {
         //
         // Also note that ArrayAdapter NEEDS a mutable List (ArrayList),
         // or it will crash!
-
         super(context, 0, new ArrayList<>(goals));
         this.onClick = onClick;
     }
