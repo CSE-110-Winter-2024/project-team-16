@@ -47,6 +47,21 @@ public class GoalTest {
     }
 
     @Test
+    public void testInActive() {
+        assertTrue(goalOne.isActive());
+        goalOne.inActive();
+        assertFalse(goalOne.isActive());
+    }
+
+    @Test
+    public void testActive() {
+        goalOne.inActive();
+        assertFalse(goalOne.isActive());
+        goalOne.active();
+        assertTrue(goalOne.isActive());
+    }
+
+    @Test
     public void testWithId() {
         Integer originId = goalOne.id();
         String originMit = goalOne.mit();

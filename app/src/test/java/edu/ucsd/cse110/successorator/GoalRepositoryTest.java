@@ -101,12 +101,36 @@ public class GoalRepositoryTest {
         assertFalse(goalRepository.find(1).getValue().isCrossed());
         goalRepository.checkOff(1);
         assertTrue(goalRepository.find(1).getValue().isCrossed());
+        goalRepository.checkOff(1);
+    }
+
+    @Test
+    public void testInActive() {
+        assertTrue(goalRepository.find(0).getValue().isActive());
+        assertFalse(goalRepository.find(3).getValue().isActive());
+        goalRepository.inActive(1);
+        goalRepository.inActive(3);
+        assertFalse(goalRepository.find(1).getValue().isActive());
+        assertFalse(goalRepository.find(3).getValue().isActive());
+    }
+
+    @Test
+    public void testActive() {
+        dataSource = new InMemoryDataSource();
+        dataSource.putGoals(TEST_GOALS_FOR_DELETE);
+        goalRepository = new GoalRepository(dataSource);
+        assertTrue(goalRepository.find(0).getValue().isActive());
+        assertFalse(goalRepository.find(3).getValue().isActive());
+        goalRepository.active(1);
+        goalRepository.active(3);
+        assertTrue(goalRepository.find(1).getValue().isActive());
+        assertTrue(goalRepository.find(3).getValue().isActive());
     }
 
     @Test
     public void testDeleteNoGoals() {
         dataSource = new InMemoryDataSource();
-        dataSource.putGoals(TEST_GOALS_FOR_DELETE);
+        dataSource.putGoals(TEST_GOALS);
         goalRepository = new GoalRepository(dataSource);
         int initialSize = goalRepository.count();
         goalRepository.deleteCrossedGoals();
@@ -115,7 +139,7 @@ public class GoalRepositoryTest {
     }
 
     @Test
-    public void testDeleteCrossedGoals() {
+    public void testDeleteCrossedRecurringGoals() {
         dataSource = new InMemoryDataSource();
         dataSource.putGoals(TEST_GOALS_FOR_DELETE);
         goalRepository = new GoalRepository(dataSource);
@@ -154,5 +178,15 @@ public class GoalRepositoryTest {
         assertEquals(Goal.GoalContext.WORK, goalRepository.findAll().getValue().get(1).goalContext());
         assertEquals(Goal.GoalContext.SCHOOL, goalRepository.findAll().getValue().get(2).goalContext());
         assertEquals(Goal.GoalContext.ERRANDS, goalRepository.findAll().getValue().get(3).goalContext());
+    }
+
+    @Test
+    public void testGetRecurringGoals() {
+        dataSource = new InMemoryDataSource();
+        dataSource.putGoals(TEST_GOALS);
+        goalRepository = new GoalRepository(dataSource);
+
+        assertEquals(Integer.valueOf(4), goalRepository.count());
+        assertEquals(3, goalRepository.getRecurringGoals().size());
     }
 }
