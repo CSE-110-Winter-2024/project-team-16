@@ -84,7 +84,7 @@ public class AddGoalDialogFragment extends DialogFragment {
 
     @SuppressLint("SetTextI18n")
     private void updateRadioButtonTextWeekly(){
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = mockedCalendar();
         Date weeklyDate = calendar.getTime();
 
         SimpleDateFormat weeklyDateFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
@@ -96,7 +96,7 @@ public class AddGoalDialogFragment extends DialogFragment {
 
     @SuppressLint("SetTextI18n")
     private void updateRadioButtonTextMonthly(){
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = mockedCalendar();
         int currentWeekOfMonth = calendar.get(Calendar.DAY_OF_WEEK_IN_MONTH); // Get the current week of the month
         Date monthlyDate = calendar.getTime();
 
@@ -131,7 +131,7 @@ public class AddGoalDialogFragment extends DialogFragment {
 
     @SuppressLint("SetTextI18n")
     private void updateRadioButtonTextYearly(){
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = mockedCalendar();
         Date yearlyDate = calendar.getTime();
 
         SimpleDateFormat yearlyDateFormat = new SimpleDateFormat("MM/dd", Locale.getDefault());
@@ -190,5 +190,14 @@ public class AddGoalDialogFragment extends DialogFragment {
 
     private void onNegativeButtonClick(DialogInterface dialog, int which) {
         dialog.cancel();
+    }
+
+    private Calendar mockedCalendar() {
+        Calendar calendar = Calendar.getInstance();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime localDateTime =  LocalDateTime.parse(mockedDate.getString("mockedTime", "0001-01-01 00:00:00"), formatter);
+        calendar.set(localDateTime.getYear(), localDateTime.getMonthValue() - 1, localDateTime.getDayOfMonth(),
+                localDateTime.getHour(), localDateTime.getMinute(), localDateTime.getSecond());
+        return calendar;
     }
 }
