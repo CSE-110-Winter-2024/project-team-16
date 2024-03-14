@@ -1,9 +1,12 @@
 package edu.ucsd.cse110.successorator.ui.dialog;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +24,8 @@ import edu.ucsd.cse110.successorator.databinding.FragmentDialogAddGoalBinding;
 import edu.ucsd.cse110.successorator.lib.domain.Goal;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -29,7 +34,7 @@ import java.util.Locale;
 public class AddGoalDialogFragment extends DialogFragment {
     private FragmentDialogAddGoalBinding view;
     private MainViewModel activityModel;
-
+    private SharedPreferences mockedDate;
 
 
     AddGoalDialogFragment() {
@@ -51,6 +56,7 @@ public class AddGoalDialogFragment extends DialogFragment {
         var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
+        this.mockedDate = requireActivity().getSharedPreferences("mockedDate", MODE_PRIVATE);
     }
 
     @NonNull
@@ -155,8 +161,9 @@ public class AddGoalDialogFragment extends DialogFragment {
             frequency = Goal.Frequency.YEARLY;
         }
 
+        String currentTime = mockedDate.getString("mockedTime", "0001-01-01 00:00:00");
 
-        var goal = new Goal(null, mit, -1, false, frequency,Goal.GoalContext.HOME);
+        var goal = new Goal(null, mit, -1, false, frequency, currentTime, Goal.GoalContext.HOME);
 
 
         activityModel.append(goal);

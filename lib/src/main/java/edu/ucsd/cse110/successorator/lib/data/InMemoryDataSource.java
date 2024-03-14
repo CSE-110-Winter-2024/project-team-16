@@ -1,5 +1,7 @@
 package edu.ucsd.cse110.successorator.lib.data;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,9 +30,19 @@ public class InMemoryDataSource {
     }
 
     public final static List<Goal> TEST_GOALS = List.of(
-            new Goal(0,"Thing1", 0, false, Goal.Frequency.ONETIME,Goal.GoalContext.HOME),
-            new Goal(1,"Thing2", 1, false, Goal.Frequency.ONETIME,Goal.GoalContext.HOME)
+            new Goal(0,"Thing1", 0, false, Goal.Frequency.ONETIME, calendarToString(), Goal.GoalContext.HOME),
+            new Goal(1,"Thing2", 1, false, Goal.Frequency.ONETIME, calendarToString(), Goal.GoalContext.HOME)
     );
+
+    public static String calendarToString() {
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        // Define the desired date-time format
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        // Format the LocalDateTime object using the formatter
+        return dateTime.format(formatter);
+    }
 
     public static InMemoryDataSource fromDefault() {
         var data = new InMemoryDataSource();

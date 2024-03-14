@@ -124,7 +124,7 @@ public class RoomGoalRepository implements IGoalRepository {
         var goalEntity = goalDao.find(id);
         var newStatus = !goalEntity.isCrossed;
         var newGoalEntity = GoalEntity.fromGoal(
-                new Goal(goalEntity.id, goalEntity.mit, goalEntity.sortOrder, newStatus, goalEntity.frequency,goalEntity.goalContext)
+                new Goal(goalEntity.id, goalEntity.mit, goalEntity.sortOrder, newStatus, goalEntity.frequency, goalEntity.recurStart, goalEntity.goalContext)
         );
 
         // Delete the old version of the goal
@@ -226,5 +226,15 @@ public class RoomGoalRepository implements IGoalRepository {
             System.out.println("Top of crossed off is now: " + topOfFinished);
         }
 
+    }
+
+    @Override
+    public List<Goal> getRecurringGoals() {
+        List<GoalEntity> recurring = goalDao.findAll().stream()
+                .filter(goal -> goal.frequency != Goal.Frequency.ONETIME && goal.frequency != Goal.Frequency.PENDING)
+                .collect(Collectors.toList());
+        return recurring.stream()
+                .map(GoalEntity::toGoal)
+                .collect(Collectors.toList());
     }
 }

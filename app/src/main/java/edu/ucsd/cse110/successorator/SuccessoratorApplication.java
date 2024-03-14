@@ -8,6 +8,7 @@ import androidx.room.Room;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -63,10 +64,13 @@ public class SuccessoratorApplication extends Application {
         mockedDate.registerOnSharedPreferenceChangeListener((sharedPrefs, key) -> {
             if ("mockedTime".equals(key)) {
                 mockedDateLive.postValue(sharedPrefs.getString(key, "0001-01-01 00:00:00"));
+                addRecurring();
                 callDeleteDecision();
+                //deleteCrossedGoals();
             }
         });
 
+        addRecurring();
         callDeleteDecision();
     }
 
@@ -74,6 +78,36 @@ public class SuccessoratorApplication extends Application {
         if (deleteCrossedGoalsNotExecutedToday()) {
             deleteCrossedGoals();
         }
+    }
+
+    private void addRecurring() {
+        for (Goal goal: goalRepository.getRecurringGoals()) {
+            switch (goal.frequency()) {
+                case DAILY:
+                    if (goal.isCrossed()) {goal.toggle();}
+                    goalRepository.append(goal);
+                case WEEKLY:
+                    if (addWeekly(goal) && goal.isCrossed()) {
+                        goalRepository.append(goal);
+                    }
+                case MONTHLY:
+                    if (addWeekly(goal) && goal.isCrossed()) {
+                        goalRepository.append(goal);
+                    }
+            }
+        }
+    }
+
+    private boolean addWeekly(Goal goal) {
+        return stringToDateTime(goal.recurStart()).getDayOfWeek()
+                .equals(getMockedDateTime().getDayOfWeek());
+    }
+
+    private boolean addMonthly(Goal goal) {
+        String recurStart = goal.recurStart();
+        DayOfWeek startWeekday = stringToDateTime(recurStart).getDayOfWeek();
+        DayOfWeek currentWeekday = getMockedDateTime().getDayOfWeek();
+        return startWeekday.equals(currentWeekday);
     }
 
     public IGoalRepository getGoalRepository() {
@@ -113,8 +147,8 @@ public class SuccessoratorApplication extends Application {
 
     public boolean deleteCrossedGoalsNotExecutedToday(){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-//        goalRepository.append(new Goal(1, formatter.format(getMockedDateTime()), 2, false, Goal.Frequency.ONETIME));
-//        goalRepository.append(new Goal(8, formatter.format(getExecutedDateTime()), 3, false, Goal.Frequency.ONETIME));
+        goalRepository.append(new Goal(1, formatter.format(getMockedDateTime()), 2, false, Goal.Frequency.ONETIME, "", Goal.GoalContext.HOME));
+        goalRepository.append(new Goal(8, formatter.format(getExecutedDateTime()), 3, false, Goal.Frequency.ONETIME, "", Goal.GoalContext.HOME));
 
         if (executedBefore2AM()) {
             return !mockedBefore2AM() || executedDateBefore();

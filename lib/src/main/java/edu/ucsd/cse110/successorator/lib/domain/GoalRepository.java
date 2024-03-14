@@ -74,4 +74,11 @@ public class GoalRepository implements IGoalRepository {
             dataSource.deleteGoal(id);
         }
     }
+
+    @Override
+    public List<Goal> getRecurringGoals() {
+        return dataSource.getGoals().stream()
+                .filter(goal -> goal.frequency() != Goal.Frequency.ONETIME && goal.frequency() != Goal.Frequency.PENDING)
+                .collect(Collectors.toList());
+    }
 }
