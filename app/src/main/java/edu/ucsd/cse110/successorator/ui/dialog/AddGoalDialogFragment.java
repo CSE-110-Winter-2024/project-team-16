@@ -143,6 +143,7 @@ public class AddGoalDialogFragment extends DialogFragment {
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
         var mit = view.addGoalEditText.getText().toString();
         Goal.Frequency frequency = Goal.Frequency.ONETIME;
+        Goal.GoalContext context = Goal.GoalContext.HOME;
 
 
         if (view.daily.isChecked()){
@@ -161,9 +162,18 @@ public class AddGoalDialogFragment extends DialogFragment {
             frequency = Goal.Frequency.YEARLY;
         }
 
+        if(view.workButton.isChecked()) {
+            context = Goal.GoalContext.WORK;
+        }
+        else if(view.schoolButton.isChecked()) {
+            context = Goal.GoalContext.SCHOOL;
+        }
+        else if(view.errandsButton.isChecked()) {
+            context = Goal.GoalContext.ERRANDS;
+        }
         String currentTime = mockedDate.getString("mockedTime", "0001-01-01 00:00:00");
 
-        var goal = new Goal(null, mit, -1, false, frequency, currentTime, Goal.GoalContext.HOME, true);
+        var goal = new Goal(null, mit, -1, false, frequency, currentTime, context, true);
 
 
         activityModel.append(goal);
