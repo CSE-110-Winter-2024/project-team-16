@@ -226,10 +226,7 @@ public class InMemoryDataSource {
                 goalSubjects.remove(id);
             }
 
-            //From ChatGPT, modify the order of remaining goals
             shiftSortOrders(removedGoal.sortOrder() + 1, maxSortOrder, -1);
-            postInsert();
-            assertSortOrderConstraints();
 
             //Notify the listener that goals change
             allGoalsSubject.setValue(getGoals());

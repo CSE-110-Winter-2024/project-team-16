@@ -2,9 +2,19 @@ package edu.ucsd.cse110.successorator;
 
 import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,7 +56,8 @@ public class MainViewModel extends ViewModel {
 
         // When the list of cards changes (or is first loaded), reset the ordering.
         goalRepository.findAll().observe(goals -> {
-            if (goals == null) return; // not ready yet, ignore, placeholder text should be displayed
+            if (goals == null)
+                return; // not ready yet, ignore, placeholder text should be displayed
 
             var newOrderedGoals = goals.stream()
                     .sorted(Comparator.comparingInt(Goal::sortOrder))
