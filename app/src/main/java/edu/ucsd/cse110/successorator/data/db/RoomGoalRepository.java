@@ -124,7 +124,7 @@ public class RoomGoalRepository implements IGoalRepository {
         var goalEntity = goalDao.find(id);
         var newStatus = !goalEntity.isCrossed;
         var newGoalEntity = GoalEntity.fromGoal(
-                new Goal(goalEntity.id, goalEntity.mit, goalEntity.sortOrder, newStatus, goalEntity.frequency)
+                new Goal(goalEntity.id, goalEntity.mit, goalEntity.sortOrder, newStatus, goalEntity.frequency,goalEntity.goalContext)
         );
 
         // Delete the old version of the goal

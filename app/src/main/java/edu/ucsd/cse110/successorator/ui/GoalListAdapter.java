@@ -1,6 +1,7 @@
 package edu.ucsd.cse110.successorator.ui;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,10 +11,12 @@ import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.data.db.GoalEntity;
 import edu.ucsd.cse110.successorator.databinding.ListItemGoalBinding;
 import edu.ucsd.cse110.successorator.lib.domain.Goal;
@@ -31,7 +34,6 @@ public class GoalListAdapter extends ArrayAdapter<GoalEntity> {
         //
         // Also note that ArrayAdapter NEEDS a mutable List (ArrayList),
         // or it will crash!
-
         super(context, 0, new ArrayList<>(goals));
         this.onClick = onClick;
     }
@@ -56,13 +58,46 @@ public class GoalListAdapter extends ArrayAdapter<GoalEntity> {
 
         // Populate the view with the goal's data.
         binding.goalMitText.setText(goal.mit);
+        switch(goal.goalContext) {
+            case HOME:
+                binding.context.setImageResource(R.drawable.ic_home_foreground);
+                binding.context.setBackgroundColor(Color.parseColor("#FFFF64"));
+                break;
+            case WORK:
+                binding.context.setImageResource(R.drawable.ic_work_foreground);
+                binding.context.setBackgroundColor(Color.parseColor("#64EDFF"));
+                break;
+            case SCHOOL:
+                binding.context.setImageResource(R.drawable.ic_school_foreground);
+                binding.context.setBackgroundColor(Color.parseColor("#EA64FF"));
+                break;
+            case ERRANDS:
+                binding.context.setImageResource(R.drawable.ic_errands_foreground);
+                binding.context.setBackgroundColor(Color.parseColor("#64FF71"));
+                break;
+        }
 
         if(goal.isCrossed) {
             binding.changeStatus.setText(goal.mit);
             binding.changeStatus.setPaintFlags(binding.changeStatus.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            binding.context.setBackgroundColor(Color.parseColor("#808080"));
         } else {
             binding.changeStatus.setText(goal.mit);
             binding.changeStatus.setPaintFlags(binding.changeStatus.getPaintFlags() & ~(Paint.STRIKE_THRU_TEXT_FLAG));
+            switch(goal.goalContext) {
+                case HOME:
+                    binding.context.setBackgroundColor(Color.parseColor("#FFFF64"));
+                    break;
+                case WORK:
+                    binding.context.setBackgroundColor(Color.parseColor("#64EDFF"));
+                    break;
+                case SCHOOL:
+                    binding.context.setBackgroundColor(Color.parseColor("#EA64FF"));
+                    break;
+                case ERRANDS:
+                    binding.context.setBackgroundColor(Color.parseColor("#64FF71"));
+                    break;
+            }
         }
 
         // Bind the delete button to the callback.

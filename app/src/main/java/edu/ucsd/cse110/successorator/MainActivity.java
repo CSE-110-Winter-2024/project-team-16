@@ -4,7 +4,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.action_bar, menu);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_hamburger);// set drawable icon
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         return true;
     }
 
@@ -53,6 +58,15 @@ public class MainActivity extends AppCompatActivity {
         } else if (itemId == R.id.action_bar_increment_date) {
             incDate();
         }
+
+        //For dropdown menu
+        else if (itemId == R.id.v_dropdown) {
+
+        }
+
+//        else if(itemId == R.id.home) {
+//
+//        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -160,4 +174,17 @@ public class MainActivity extends AppCompatActivity {
 //        incDate();
 //        return localDate;
 //    }
+
+
+
+
+    private void dropDown(View view){
+        PopupMenu dropDown = new PopupMenu(this,view);
+        MenuInflater inflater = dropDown.getMenuInflater();
+
+        inflater.inflate(R.menu.action_bar, dropDown.getMenu());
+
+
+    }
+
 }
