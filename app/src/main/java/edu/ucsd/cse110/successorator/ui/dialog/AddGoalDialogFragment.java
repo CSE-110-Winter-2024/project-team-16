@@ -156,7 +156,7 @@ public class AddGoalDialogFragment extends DialogFragment {
         }
 
 
-        var goal = new Goal(null, mit, -1, false, frequency,Goal.GoalContext.HOME);
+        var goal = new Goal(null, mit, -1, false, frequency,Goal.GoalContext.ERRANDS);
 
 
         activityModel.append(goal);
