@@ -59,11 +59,11 @@ public class SuccessoratorApplication extends Application {
         }
 
         mockedDate = getSharedPreferences("mockedDate", MODE_PRIVATE);
-        mockedDateLive.setValue(mockedDate.getString("mockedTime", "0001-01-01 00:00:00"));
+        //mockedDateLive.setValue(mockedDate.getString("mockedTime", "0001-01-01 00:00:00"));
 
         mockedDate.registerOnSharedPreferenceChangeListener((sharedPrefs, key) -> {
             if ("mockedTime".equals(key)) {
-                mockedDateLive.postValue(sharedPrefs.getString(key, "0001-01-01 00:00:00"));
+                //mockedDateLive.postValue(sharedPrefs.getString(key, "0001-01-01 00:00:00"));
                 addRecurring();
                 callDeleteDecision();
                 //deleteCrossedGoals();
@@ -75,39 +75,62 @@ public class SuccessoratorApplication extends Application {
     }
 
     private void callDeleteDecision(){
-        if (deleteCrossedGoalsNotExecutedToday()) {
-            deleteCrossedGoals();
-        }
+        if (deleteCrossedGoalsNotExecutedToday()) {deleteCrossedGoals();}
     }
 
     private void addRecurring() {
         for (Goal goal: goalRepository.getRecurringGoals()) {
             switch (goal.frequency()) {
                 case DAILY:
-                    if (goal.isCrossed()) {goal.toggle();}
-                    goalRepository.append(goal);
+                    addRecurringGoal(goal);
+                    break;
                 case WEEKLY:
-                    if (addWeekly(goal) && goal.isCrossed()) {
-                        goalRepository.append(goal);
+                    if (shouldAddWeekly(goal)) {
+                        addRecurringGoal(goal);
                     }
+                    break;
                 case MONTHLY:
-                    if (addWeekly(goal) && goal.isCrossed()) {
-                        goalRepository.append(goal);
-                    }
+                    if (shouldAddMonthly(goal)) {addRecurringGoal(goal);}
+                    break;
+                case YEARLY:
+                    if (shouldAddYearly(goal)) {addRecurringGoal(goal);}
+                    break;
             }
         }
     }
 
-    private boolean addWeekly(Goal goal) {
+    private void addRecurringGoal(Goal goal) {
+        if (goal.isCrossed()) {goal.toggle();}
+        if (!goal.isActive()) {goal.active();}
+        goalRepository.append(goal);
+    }
+
+    private boolean shouldAddWeekly(Goal goal) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        //goalRepository.append(new Goal(7, getMockedDateTime().getDayOfWeek()+" "+ stringToDateTime(goal.recurStart()).getDayOfWeek(), 2, false, Goal.Frequency.ONETIME, "", Goal.GoalContext.HOME, true));
+        //goalRepository.append(new Goal(8, stringToDateTime(goal.recurStart()).getDayOfWeek()+" "+ formatter.format(getMockedDateTime()), 3, false, Goal.Frequency.ONETIME, "", Goal.GoalContext.HOME, true));
         return stringToDateTime(goal.recurStart()).getDayOfWeek()
                 .equals(getMockedDateTime().getDayOfWeek());
     }
 
-    private boolean addMonthly(Goal goal) {
-        String recurStart = goal.recurStart();
-        DayOfWeek startWeekday = stringToDateTime(recurStart).getDayOfWeek();
-        DayOfWeek currentWeekday = getMockedDateTime().getDayOfWeek();
-        return startWeekday.equals(currentWeekday);
+    private boolean shouldAddMonthly(Goal goal) {
+        Calendar start = dateTimeToCalendar(stringToDateTime(goal.recurStart()));
+        int startWeekday = start.get(Calendar.DAY_OF_WEEK);
+        int startWeekOfMonth = start.get(Calendar.DAY_OF_WEEK_IN_MONTH);
+
+        Calendar current = dateTimeToCalendar(getMockedDateTime()) ;
+        int currentWeekday = current.get(Calendar.DAY_OF_WEEK);
+        int currentWeekOfMonth = current.get(Calendar.DAY_OF_WEEK_IN_MONTH);
+
+        //goalRepository.append(new Goal(11, startWeekday+" "+startWeekOfMonth+", "+currentWeekday+" "+currentWeekOfMonth, 5, false, Goal.Frequency.ONETIME, "", Goal.GoalContext.HOME, true));
+
+        return currentWeekOfMonth == startWeekOfMonth && currentWeekday == startWeekday;
+    }
+
+    private boolean shouldAddYearly(Goal goal) {
+        return getMockedDateTime().getDayOfMonth() == stringToDateTime(goal.recurStart()).getDayOfMonth() &&
+                getMockedDateTime().getMonthValue() == stringToDateTime(goal.recurStart()).getMonthValue();
     }
 
     public IGoalRepository getGoalRepository() {
@@ -125,7 +148,7 @@ public class SuccessoratorApplication extends Application {
     }
 
     private LocalDateTime getMockedDateTime(){
-        String mockedTime = mockedDateLive.getValue();
+        String mockedTime = mockedDate.getString("mockedTime", "0001-01-01 00:00:00");
         return stringToDateTime(mockedTime);
     }
 
@@ -147,8 +170,8 @@ public class SuccessoratorApplication extends Application {
 
     public boolean deleteCrossedGoalsNotExecutedToday(){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        goalRepository.append(new Goal(1, formatter.format(getMockedDateTime()), 2, false, Goal.Frequency.ONETIME, "", Goal.GoalContext.HOME));
-        goalRepository.append(new Goal(8, formatter.format(getExecutedDateTime()), 3, false, Goal.Frequency.ONETIME, "", Goal.GoalContext.HOME));
+        //goalRepository.append(new Goal(10, getMockedDateTime().getDayOfWeek()+" "+ formatter.format(getMockedDateTime()), 2, false, Goal.Frequency.ONETIME, "", Goal.GoalContext.HOME, true));
+//        goalRepository.append(new Goal(8, formatter.format(getExecutedDateTime()), 3, false, Goal.Frequency.ONETIME, "", Goal.GoalContext.HOME, true));
 
         if (executedBefore2AM()) {
             return !mockedBefore2AM() || executedDateBefore();
@@ -164,5 +187,12 @@ public class SuccessoratorApplication extends Application {
         //Update the record of last deletion execution
         String mockedTime = mockedDate.getString("mockedTime", "0001-01-01 00:00:00");
         mockedDate.edit().putString("lastExecution", mockedTime).apply();
+    }
+
+    private Calendar dateTimeToCalendar(LocalDateTime localDateTime) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(localDateTime.getYear(), localDateTime.getMonthValue() - 1, localDateTime.getDayOfMonth(),
+                localDateTime.getHour(), localDateTime.getMinute(), localDateTime.getSecond());
+        return calendar;
     }
 }

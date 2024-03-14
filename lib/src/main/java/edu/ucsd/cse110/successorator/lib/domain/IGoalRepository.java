@@ -22,4 +22,7 @@ public interface IGoalRepository {
 
     void deleteCrossedGoals();
     List<Goal> getRecurringGoals();
+
+    void inActive(int id);
+    void active(int id);
 }

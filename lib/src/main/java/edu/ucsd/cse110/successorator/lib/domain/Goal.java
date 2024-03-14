@@ -27,7 +27,7 @@ public class Goal implements Serializable {
 
     private GoalContext goalContext;
 
-
+    private boolean isActive;
 
 
 
@@ -36,7 +36,8 @@ public class Goal implements Serializable {
             @Nullable Integer id,
             @Nullable String mit,
             @NotNull Integer sortOrder,
-            boolean isCrossed, @NonNull Frequency frequency, @NonNull String recurStart, @NonNull GoalContext goalContext) {
+            boolean isCrossed, @NonNull Frequency frequency, @NonNull String recurStart,
+            @NonNull GoalContext goalContext, boolean isActive) {
         this.id = id;
         this.mit = mit;
         this.sortOrder = sortOrder;
@@ -44,6 +45,7 @@ public class Goal implements Serializable {
         this.frequency = frequency;
         this.recurStart = recurStart;
         this.goalContext = goalContext;
+        this.isActive = isActive;
     }
 
     @Nullable
@@ -68,14 +70,17 @@ public class Goal implements Serializable {
     public String recurStart() {return recurStart;}
 
     public GoalContext goalContext() {return goalContext; }
-    public void toggle() { isCrossed = !isCrossed; }
+    public boolean isActive() {return isActive;}
+    public void toggle() {isCrossed = !isCrossed;}
+    public void inActive() {isActive = false;}
+    public void active() {isActive = true;}
 
     public Goal withId(int id) {
-        return new Goal(id, this.mit(), this.sortOrder(), this.isCrossed, this.frequency, this.recurStart, this.goalContext);
+        return new Goal(id, this.mit(), this.sortOrder(), this.isCrossed, this.frequency, this.recurStart, this.goalContext, this.isActive);
     }
 
     public Goal withSortOrder(int sortOrder) {
-        return new Goal(this.id(), this.mit(), sortOrder, this.isCrossed, this.frequency, this.recurStart, this.goalContext);
+        return new Goal(this.id(), this.mit(), sortOrder, this.isCrossed, this.frequency, this.recurStart, this.goalContext, this.isActive);
     }
 
     @Override
@@ -87,11 +92,12 @@ public class Goal implements Serializable {
                 Objects.equals(sortOrder, goal.sortOrder) && (isCrossed == goal.isCrossed() &&
                 Objects.equals(frequency,goal.frequency) &&
                 Objects.equals(recurStart, goal.recurStart) &&
-                Objects.equals(goalContext, goal.goalContext));
+                Objects.equals(goalContext, goal.goalContext) &&
+                Objects.equals(isActive, goal.isActive));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, mit, sortOrder, isCrossed,frequency, recurStart, goalContext);
+        return Objects.hash(id, mit, sortOrder, isCrossed,frequency, recurStart, goalContext, isActive);
     }
 }

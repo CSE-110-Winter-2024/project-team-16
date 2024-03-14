@@ -35,7 +35,10 @@ public class GoalEntity {
     @ColumnInfo(name = "goalContext")
     public Goal.GoalContext goalContext;
 
-    GoalEntity(int id, @NonNull String mit, int sortOrder, boolean isCrossed, Goal.Frequency frequency, String recurStart, Goal.GoalContext goalContext) {
+    @ColumnInfo(name = "is_active")
+    public boolean isActive;
+
+    GoalEntity(int id, @NonNull String mit, int sortOrder, boolean isCrossed, Goal.Frequency frequency, String recurStart, Goal.GoalContext goalContext, boolean isActive) {
         this.id = id;
         this.mit = mit;
         this.sortOrder = sortOrder;
@@ -43,6 +46,7 @@ public class GoalEntity {
         this.frequency = frequency;
         this.recurStart = recurStart;
         this.goalContext = goalContext;
+        this.isActive = isActive;
     }
 
     public static GoalEntity fromGoal(@NonNull Goal goal) {
@@ -53,13 +57,14 @@ public class GoalEntity {
                 goal.isCrossed(),
                 goal.frequency(),
                 goal.recurStart(),
-                goal.goalContext()
+                goal.goalContext(),
+                goal.isActive()
         );
         return goalEntity;
     }
 
     public @NonNull Goal toGoal() {
-        return new Goal(id, mit, sortOrder, isCrossed, frequency, recurStart, goalContext);
+        return new Goal(id, mit, sortOrder, isCrossed, frequency, recurStart, goalContext, isActive);
     }
 
 }

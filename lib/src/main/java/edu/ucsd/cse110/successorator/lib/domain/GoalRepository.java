@@ -63,15 +63,19 @@ public class GoalRepository implements IGoalRepository {
      */
     @Override
     public void deleteCrossedGoals() {
-        //From ChatGPT, find the id of all the crossed out goals
         List<Integer> crossedGoals = dataSource.getGoals().stream()
                 .filter(Goal::isCrossed)
                 .map(Goal::id)
                 .collect(Collectors.toList());
 
-        //Delete crossed out goals by id
+        //Delete crossed out goals by id, leave the recurring ones
         for (Integer id: crossedGoals) {
-            dataSource.deleteGoal(id);
+            if (!dataSource.getGoal(id).frequency().equals(Goal.Frequency.ONETIME) &&
+                    !dataSource.getGoal(id).frequency().equals(Goal.Frequency.PENDING)) {
+                dataSource.inActiveGoal(id);
+            } else {
+                dataSource.deleteGoal(id);
+            }
         }
     }
 
@@ -81,4 +85,17 @@ public class GoalRepository implements IGoalRepository {
                 .filter(goal -> goal.frequency() != Goal.Frequency.ONETIME && goal.frequency() != Goal.Frequency.PENDING)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public void inActive(int id) {dataSource.inActiveGoal(id);}
+
+    @Override
+    public void active(int id) {dataSource.activeGoal(id);}
+
+//    @Override
+//    public List<Goal> getActiveGoals() {
+//        return dataSource.getGoals().stream()
+//                .filter(Goal::isActive)
+//                .collect(Collectors.toList());
+//    }
 }

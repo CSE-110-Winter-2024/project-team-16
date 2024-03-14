@@ -56,7 +56,7 @@ public class AddGoalDialogFragment extends DialogFragment {
         var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
-        this.mockedDate = requireActivity().getSharedPreferences("mockedDate", MODE_PRIVATE);
+        this.mockedDate = getActivity().getSharedPreferences("mockedDate", MODE_PRIVATE);
     }
 
     @NonNull
@@ -163,7 +163,7 @@ public class AddGoalDialogFragment extends DialogFragment {
 
         String currentTime = mockedDate.getString("mockedTime", "0001-01-01 00:00:00");
 
-        var goal = new Goal(null, mit, -1, false, frequency, currentTime, Goal.GoalContext.HOME);
+        var goal = new Goal(null, mit, -1, false, frequency, currentTime, Goal.GoalContext.HOME, true);
 
 
         activityModel.append(goal);
