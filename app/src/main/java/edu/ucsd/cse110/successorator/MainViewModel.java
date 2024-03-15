@@ -142,9 +142,9 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
     @NonNull
     private List<GoalEntity> getToday(List<Goal> currentGoals) {
         return currentGoals.stream()
-                .filter(goal -> goal.isActive() &&
-                        (LocalDateTime.parse(goal.recurStart()).isBefore(getMockedDateTime()) ||
-                        LocalDateTime.parse(goal.recurStart()).isEqual(getMockedDateTime())))
+                .filter(goal -> goal.isActive() && goal.frequency() != Goal.Frequency.PENDING &&
+                        (stringToDateTime(goal.recurStart()).isBefore(getMockedDateTime()) ||
+                                stringToDateTime(goal.recurStart()).isEqual(getMockedDateTime())))
                 .sorted(Comparator.comparingInt(Goal::sortOrder))
                 .map(GoalEntity::fromGoal)
                 .collect(Collectors.toList());
