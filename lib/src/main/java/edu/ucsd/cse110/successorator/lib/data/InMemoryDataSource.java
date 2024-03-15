@@ -17,10 +17,10 @@ public class InMemoryDataSource {
     private int minSortOrder = Integer.MAX_VALUE;
     private int maxSortOrder = Integer.MIN_VALUE;
 
-    private int begOfCrossed = 2;
-    private int begOfWork = 1;
-    private int begOfSchool = 2;
-    private int begOfErrands = 2;
+    private int begOfCrossed = 0;
+    private int begOfWork = 0;
+    private int begOfSchool = 0;
+    private int begOfErrands = 0;
 
     private final Map<Integer, Goal> goals
             = new HashMap<>();
