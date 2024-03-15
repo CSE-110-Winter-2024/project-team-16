@@ -25,6 +25,9 @@ import java.util.Calendar;
 import edu.ucsd.cse110.successorator.databinding.ActivityMainBinding;
 //import edu.ucsd.cse110.successorator.app.ui.GoalListFragment;
 import edu.ucsd.cse110.successorator.ui.dialog.AddGoalDialogFragment;
+import edu.ucsd.cse110.successorator.ui.dialog.AddPendingGoalDialogFragment;
+//
+ import edu.ucsd.cse110.successorator.ui.dialog.AddRecurringGoalDialogFragment;
 
 public class MainActivity extends AppCompatActivity {
     private SharedPreferences mockedDate;
@@ -76,10 +79,30 @@ public class MainActivity extends AppCompatActivity {
 
     //TODO: display AddGoalDialogFragment. When goal is entered, display GoalList
     private void addGoal() {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(AddGoalDialogFragment.newInstance(), "AddGoalDialogFragment")
-                .commit();//cancel works, but crashes when goal is added
+        String mode = sharedMode.getString("mode", "Tod ");
+        if (mode.equals("Tod ")) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(AddGoalDialogFragment.newInstance(), "AddGoalDialogFragment")
+                    .commit();//cancel works, but crashes when goal is addedsetTitle(mode+formatDate(calendar));
+        } else if (mode.equals("Tmr ")) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(AddGoalDialogFragment.newInstance(), "AddGoalDialogFragment")
+                    .commit();
+        } else if(mode.equals("Recurring")){
+            getSupportFragmentManager()
+                    .beginTransaction()
+                   .add(AddRecurringGoalDialogFragment.newInstance(), "AddRecurringGoalDialogFragment")
+                    .commit();
+        }
+        else if(mode.equals("Pending")) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(AddPendingGoalDialogFragment.newInstance(), "AddPendingGoalDialogFragment")
+                    .commit();
+        }
+
 /*
         //From ChatGPT: to use result of one fragment to switch to another
         not necessary
