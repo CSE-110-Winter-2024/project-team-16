@@ -29,6 +29,7 @@ public class SuccessoratorApplication extends Application {
     private IGoalRepository goalRepository;
     private SharedPreferences mockedDate;
     private SharedPreferences sharedMode;
+    private SharedPreferences contextfocus;
     private MutableLiveData<String> mockedDateLive = new MutableLiveData<>();
     private static final int TIME_TO_DELETE = 2;
 
@@ -75,11 +76,16 @@ public class SuccessoratorApplication extends Application {
 
         addRecurring();
         callDeleteDecision();
+
+        contextfocus = getSharedPreferences("focusMode", MODE_PRIVATE);
+
     }
 
     public SharedPreferences getMode() {return sharedMode;}
 
     public SharedPreferences getDate() {return mockedDate;}
+
+    public SharedPreferences getFocus() { return contextfocus; }
 
     public void callDeleteDecision(){
         if (deleteCrossedGoalsNotExecutedToday()) {deleteCrossedGoals();}

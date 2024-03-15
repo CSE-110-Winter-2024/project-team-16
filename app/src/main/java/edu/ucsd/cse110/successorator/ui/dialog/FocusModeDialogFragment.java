@@ -2,7 +2,9 @@ package edu.ucsd.cse110.successorator.ui.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,6 +19,7 @@ import edu.ucsd.cse110.successorator.lib.domain.Goal;
 public class FocusModeDialogFragment extends DialogFragment {
     private FragmentDialogFocusModeBinding view;
     private MainViewModel activityModel;
+    private SharedPreferences shareFocus;
 
 
     FocusModeDialogFragment() {
@@ -38,6 +41,7 @@ public class FocusModeDialogFragment extends DialogFragment {
         var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
+        this.shareFocus = getActivity().getSharedPreferences("focusMode", Context.MODE_PRIVATE);
     }
 
     @NonNull
@@ -55,19 +59,21 @@ public class FocusModeDialogFragment extends DialogFragment {
 
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
         if (view.homeFocus.isChecked()) {
-            activityModel.focusContext = Goal.GoalContext.HOME;
+            this.shareFocus.edit().putString("focusMode", "HOME").apply();
         } else if (view.workFocus.isChecked()) {
-            activityModel.focusContext = Goal.GoalContext.WORK;
+            this.shareFocus.edit().putString("focusMode", "WORK").apply();
         } else if (view.schoolFocus.isChecked()) {
-            activityModel.focusContext = Goal.GoalContext.SCHOOL;
+            this.shareFocus.edit().putString("focusMode", "SCHOOL").apply();
         } else if (view.errandsFocus.isChecked()) {
-            activityModel.focusContext = Goal.GoalContext.ERRANDS;
+            this.shareFocus.edit().putString("focusMode", "ERRANDS").apply();
+        } else {
+            this.shareFocus.edit().putString("focusMode", "NA").apply();
         }
-//        activityModel.setFocus(); TODO
         dialog.dismiss();
     }
 
-    private void onNegativeButtonClick(DialogInterface dialog, int which) {
+    private void onNegativeButtonClick(@NonNull DialogInterface dialog, int which) {
+        this.shareFocus.edit().putString("focusMode", "NA").apply();
         dialog.cancel();
     }
 
