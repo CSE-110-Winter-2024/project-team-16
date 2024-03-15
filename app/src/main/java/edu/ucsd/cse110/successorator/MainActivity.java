@@ -25,12 +25,15 @@ import java.util.Calendar;
 import edu.ucsd.cse110.successorator.databinding.ActivityMainBinding;
 //import edu.ucsd.cse110.successorator.app.ui.GoalListFragment;
 import edu.ucsd.cse110.successorator.ui.dialog.AddGoalDialogFragment;
+
+import edu.ucsd.cse110.successorator.ui.dialog.FocusModeDialogFragment;
 import edu.ucsd.cse110.successorator.ui.dialog.AddPendingGoalDialogFragment;
-//
+
  import edu.ucsd.cse110.successorator.ui.dialog.AddRecurringGoalDialogFragment;
 
 public class MainActivity extends AppCompatActivity {
     private SharedPreferences mockedDate;
+
     public Calendar calendar;
     private SharedPreferences sharedMode;
 
@@ -70,14 +73,20 @@ public class MainActivity extends AppCompatActivity {
             dropDown();
         }
 
-//        else if(itemId == R.id.home) {
-//
-//        }
+        else if(itemId == android.R.id.home) {
+            focusMode();
+        }
 
         return super.onOptionsItemSelected(item);
     }
 
-    //TODO: display AddGoalDialogFragment. When goal is entered, display GoalList
+    private void focusMode() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(FocusModeDialogFragment.newInstance(), "FocusModeDialogFragment")
+                .commit();
+    }
+
     private void addGoal() {
         String mode = sharedMode.getString("mode", "Tod ");
         if (mode.equals("Tod ")) {
@@ -117,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
  */
+
 
 
         /*
