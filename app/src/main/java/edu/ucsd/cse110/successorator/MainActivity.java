@@ -145,6 +145,10 @@ public class MainActivity extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
         String formattedDate = weekday.substring(0, 3) + " " + sdf.format(calendar.getTime());
 
+        String mode = sharedMode.getString("mode", "Tod ");
+        if (mode.equals("Tmr ")) {
+            calendar.add(Calendar.DAY_OF_MONTH, -1);
+        }
         updateShared(calendar);
         return formattedDate;
     }
