@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
+import androidx.annotation.NonNull;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -40,6 +41,9 @@ import edu.ucsd.cse110.successorator.lib.util.Subject;
 public class MainViewModel extends ViewModel implements SharedPreferences.OnSharedPreferenceChangeListener{
     private final IGoalRepository goalRepository;
     private final MutableSubject<List<GoalEntity>> orderedGoals;
+    public Goal.GoalContext focusContext;
+
+    private SharedPreferences contextfocus;
 
     // private final MutableSubject<Boolean> isCrossedOff;
     // private final MutableSubject<String> displayedText;
@@ -54,6 +58,7 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
                     creationExtras -> {
                         var app = (SuccessoratorApplication) creationExtras.get(APPLICATION_KEY);
                         assert app != null;
+                        // TODO: add app.getFocus()
                         return new MainViewModel(app.getGoalRepository(), app.getMode(), app.getDate());
                     });
 
@@ -64,7 +69,6 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
         this.orderedGoals = new SimpleSubject<>();
 
         // Initialize...
-
         sharedMode = mode;
         sharedMode.registerOnSharedPreferenceChangeListener(this);
         mockedDate = date;
@@ -86,9 +90,8 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
             //orderedGoals.setValue(activeGoals);
             updateShowGoals();
 
+
         });
-
-
     }
 
     public void updateShowGoals() {

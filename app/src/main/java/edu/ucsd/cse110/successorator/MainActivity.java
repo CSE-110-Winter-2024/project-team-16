@@ -83,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
-    //TODO: display AddGoalDialogFragment. When goal is entered, display GoalList
     private void addGoal() {
         getSupportFragmentManager()
                 .beginTransaction()

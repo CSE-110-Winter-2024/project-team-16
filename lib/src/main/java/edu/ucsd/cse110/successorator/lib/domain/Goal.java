@@ -16,21 +16,15 @@ public class Goal implements Serializable {
     private final @NotNull Integer sortOrder;
 
     private boolean isCrossed;
-
     public enum Frequency {ONETIME, DAILY, WEEKLY, MONTHLY, YEARLY, PENDING}
-
     private Frequency frequency;
 
     private String recurStart;
 
     public enum GoalContext {HOME, WORK, SCHOOL, ERRANDS}
-
     private GoalContext goalContext;
 
     private boolean isActive;
-
-
-
 
     public Goal(
             @Nullable Integer id,
