@@ -30,6 +30,11 @@ public class SwitchPageTest {
             new Goal(5, "yearly", 4, false, Goal.Frequency.YEARLY, calendarToString(), Goal.GoalContext.HOME, false)
     );
 
+    public final static List<Goal> FUTURE_GOALS = List.of(
+            new Goal(0,"Thing1", 0, false, Goal.Frequency.ONETIME, calendarToString(), Goal.GoalContext.HOME, true),
+            new Goal(1,"Thing2", 1, false, Goal.Frequency.ONETIME, "2024-03-15 00:00:00", Goal.GoalContext.SCHOOL, true)
+    );
+
     private static String calendarToString() {
         return "2024-03-14 12:00:00";
     }
@@ -43,9 +48,24 @@ public class SwitchPageTest {
 
     @Test
     public void TmrPageTest() {
-        svm = new SimplifiedViewModel(GOALS, "Tmr ", "2024-03-14 00:00:00");
+        svm = new SimplifiedViewModel(GOALS, "Tmr ", "2024-03-14 01:00:00");
         List<Goal> tmr = svm.updateShowGoals();
         assertEquals(1, tmr.size());
+    }
+
+    @Test
+    public void FutureGoalTmrTest() {
+        svm = new SimplifiedViewModel(FUTURE_GOALS, "Tmr ", "2024-03-14 00:00:00");
+        List<Goal> tmr = svm.updateShowGoals();
+        assertEquals(1, tmr.size());
+        assertEquals("Thing2", tmr.get(0).mit());
+    }
+
+    @Test
+    public void FutureGoalTodayTest() {
+        svm = new SimplifiedViewModel(FUTURE_GOALS, "Tod ", "2024-03-14 00:00:00");
+        List<Goal> tmr = svm.updateShowGoals();
+        assertEquals(0, tmr.size());
     }
 
     @Test
