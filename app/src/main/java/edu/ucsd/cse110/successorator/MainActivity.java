@@ -29,12 +29,13 @@ import edu.ucsd.cse110.successorator.ui.dialog.AddGoalDialogFragment;
 public class MainActivity extends AppCompatActivity {
     private SharedPreferences mockedDate;
     public Calendar calendar;
-    private String mode = "Today ";
+    private SharedPreferences sharedMode;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mockedDate = getSharedPreferences("mockedDate", Context.MODE_PRIVATE);
+        sharedMode = getSharedPreferences("sharedMode", Context.MODE_PRIVATE);
         calendar = Calendar.getInstance();
         setModeTitle();
         var view = ActivityMainBinding.inflate(getLayoutInflater(), null, false);
@@ -149,8 +150,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setModeTitle() {
-        if (mode.equals("Today ") || mode.equals("Tmr ")) {
+        String mode = sharedMode.getString("mode", "Tod ");
+        if (mode.equals("Tod ")) {
             setTitle(mode+formatDate(calendar));
+        } else if (mode.equals("Tmr ")) {
+            Calendar tmrCalendar = (Calendar) calendar.clone();
+            tmrCalendar.add(Calendar.DAY_OF_MONTH, 1);
+            setTitle(mode+formatDate(tmrCalendar));
         } else {
             setTitle(mode);
         }
@@ -170,20 +176,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item){
                 if (item.getItemId() == R.id.today){
+                    sharedMode.edit().putString("mode", "Tod ").apply();
+                    setModeTitle();
                 }
 
                 else if (item.getItemId() == R.id.tomorrow){
-                    mode = "Tmr ";
+                    sharedMode.edit().putString("mode", "Tmr ").apply();
                     setModeTitle();
                     return false;
                 }
 
                 else if (item.getItemId() == R.id.pending){
-                    mode = "Pending";
+                    sharedMode.edit().putString("mode", "Pending").apply();
                     setModeTitle();
                     return false;
                 } else if (item.getItemId() == R.id.reccuring){
-                    mode = "Recurring";
+                    sharedMode.edit().putString("mode", "Pending").apply();
                     setModeTitle();
                     return false;
                 }

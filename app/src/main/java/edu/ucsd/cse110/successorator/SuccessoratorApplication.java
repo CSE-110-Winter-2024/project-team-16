@@ -28,6 +28,7 @@ public class SuccessoratorApplication extends Application {
     private InMemoryDataSource dataSource;
     private IGoalRepository goalRepository;
     private SharedPreferences mockedDate;
+    private SharedPreferences sharedMode;
     private MutableLiveData<String> mockedDateLive = new MutableLiveData<>();
     private static final int TIME_TO_DELETE = 2;
 
@@ -60,6 +61,7 @@ public class SuccessoratorApplication extends Application {
 
         mockedDate = getSharedPreferences("mockedDate", MODE_PRIVATE);
         //mockedDateLive.setValue(mockedDate.getString("mockedTime", "0001-01-01 00:00:00"));
+        sharedMode = getSharedPreferences("sharedMode", MODE_PRIVATE);
 
         mockedDate.registerOnSharedPreferenceChangeListener((sharedPrefs, key) -> {
             if ("mockedTime".equals(key)) {
@@ -73,6 +75,8 @@ public class SuccessoratorApplication extends Application {
         addRecurring();
         callDeleteDecision();
     }
+
+    public SharedPreferences getMode() {return sharedMode;}
 
     public void callDeleteDecision(){
         if (deleteCrossedGoalsNotExecutedToday()) {deleteCrossedGoals();}
