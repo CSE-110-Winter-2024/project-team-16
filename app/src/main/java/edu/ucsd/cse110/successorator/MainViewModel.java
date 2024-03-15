@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
+import androidx.annotation.NonNull;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -29,8 +30,7 @@ import edu.ucsd.cse110.successorator.lib.util.Subject;
 public class MainViewModel extends ViewModel implements SharedPreferences.OnSharedPreferenceChangeListener{
     private final IGoalRepository goalRepository;
     private final MutableSubject<List<GoalEntity>> orderedGoals;
-    // private final MutableSubject<Boolean> isCrossedOff;
-    // private final MutableSubject<String> displayedText;
+    private SharedPreferences contextfocus;
     private SharedPreferences sharedMode;
     private SharedPreferences mockedDate;
     private List<Goal> currentGoals;
@@ -42,24 +42,24 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
                     creationExtras -> {
                         var app = (SuccessoratorApplication) creationExtras.get(APPLICATION_KEY);
                         assert app != null;
-                        return new MainViewModel(app.getGoalRepository(), app.getMode(), app.getDate());
+                        // TODO: add app.getFocus()
+                        return new MainViewModel(app.getGoalRepository(), app.getMode(), app.getDate(), app.getFocus());
                     });
 
-    public MainViewModel(IGoalRepository goalRepository, SharedPreferences mode, SharedPreferences date) {
+    public MainViewModel(IGoalRepository goalRepository, SharedPreferences mode, SharedPreferences date, SharedPreferences focus) {
         this.goalRepository = goalRepository;
 
         // Create the observable subjects.
         this.orderedGoals = new SimpleSubject<>();
-        // this.isCrossedOff = new SimpleSubject<>();
-        //this.displayedText = new SimpleSubject<>();
 
         // Initialize...
-        // isCrossedOff.setValue(false);
-
         sharedMode = mode;
         sharedMode.registerOnSharedPreferenceChangeListener(this);
         mockedDate = date;
         mockedDate.registerOnSharedPreferenceChangeListener(this);
+        contextfocus = focus;
+        contextfocus.registerOnSharedPreferenceChangeListener(this);
+
         // When the list of cards changes (or is first loaded), reset the ordering.
         goalRepository.findAll().observe(goals -> {
             if (goals == null)
@@ -76,10 +76,9 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
             currentGoals = new ArrayList<>(goals);
             //orderedGoals.setValue(activeGoals);
             updateShowGoals();
+            Focus();
 
         });
-
-
     }
 
     public void updateShowGoals() {
@@ -94,6 +93,26 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
             showGoals = getRecur();
         } else {
             showGoals = getPending();
+        }
+        orderedGoals.setValue(showGoals);
+    }
+
+    public void Focus() {
+        List<GoalEntity> showGoals;
+        if(currentGoals == null) return;
+        String mode = contextfocus.getString("focusMode", "NA");
+        if(mode.equals("NA")) {
+            showGoals = getToday(currentGoals);
+        } else if(mode.equals("HOME")) {
+            showGoals = getFocuseContext(currentGoals, Goal.GoalContext.HOME);
+        } else if(mode.equals("WORK")) {
+            showGoals = getFocuseContext(currentGoals, Goal.GoalContext.WORK);
+        } else if(mode.equals("SCHOOL")) {
+            showGoals = getFocuseContext(currentGoals, Goal.GoalContext.SCHOOL);
+        } else if(mode.equals("ERRANDS")) {
+            showGoals = getFocuseContext(currentGoals, Goal.GoalContext.ERRANDS);
+        } else {
+            showGoals = getToday(currentGoals);
         }
         orderedGoals.setValue(showGoals);
     }
@@ -150,6 +169,15 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
                 .collect(Collectors.toList());
     }
 
+    @NonNull
+    private List<GoalEntity> getFocuseContext(List<Goal> currentGoals, Goal.GoalContext context) {
+        return currentGoals.stream()
+                .filter(goal -> goal.goalContext() == context)
+                .sorted(Comparator.comparingInt(Goal::sortOrder))
+                .map(GoalEntity::fromGoal)
+                .collect(Collectors.toList());
+    }
+
     private LocalDateTime stringToDateTime(String dateString) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return LocalDateTime.parse(dateString, formatter);
@@ -191,6 +219,7 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
                 getMockedDateTime().plusDays(1).getMonthValue() == stringToDateTime(goal.recurStart()).getMonthValue();
     }
 
+
     public Subject<List<GoalEntity>> getOrderedGoals() {
         return orderedGoals;
     }
@@ -213,6 +242,8 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals("mode")) {
             updateShowGoals();
+        } else if (key.equals("focusMode")) {
+            Focus();
         }
     }
 }
