@@ -1,4 +1,10 @@
 # Team 16 - Successorator 
+Velocity Estimation 
+Based on milestone 1, we believe that we underestimated the task-length time. Also, we struggled a lot with GitHub. Thus, our estimated new initial velocity is 0.6 since 
+Our new hour estimations from planning poker have gone up significantly (as we largely based our estimations on our experience during the milestone 1 developing phase). 
+We have much more experience using GitHub and Android software now than we did during the milestone 1 developing phase. 
+We need to finish up a few leftover tasks from the first milestone. 
+Hence, 0.6 velocity should be a good estimate. 
 
 ---
 
