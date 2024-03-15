@@ -15,10 +15,10 @@ public class InMemoryDataSource {
     private int minSortOrder = Integer.MAX_VALUE;
     private int maxSortOrder = Integer.MIN_VALUE;
 
-    private int begOfCrossed = 4;
+    private int begOfCrossed = 2;
     private int begOfWork = 1;
     private int begOfSchool = 2;
-    private int begOfErrands = 3;
+    private int begOfErrands = 2;
 
     private final Map<Integer, Goal> goals
             = new HashMap<>();
@@ -31,10 +31,10 @@ public class InMemoryDataSource {
     }
 
     public final static List<Goal> TEST_GOALS = List.of(
-            new Goal(0,"Home", 0, false, Goal.Frequency.ONETIME, Goal.GoalContext.HOME),
-            new Goal(1,"Work", 1, false, Goal.Frequency.ONETIME, Goal.GoalContext.WORK),
-            new Goal(2,"School", 2, false, Goal.Frequency.ONETIME, Goal.GoalContext.SCHOOL),
-            new Goal(3,"Errand", 3, false, Goal.Frequency.ONETIME, Goal.GoalContext.ERRANDS)
+            new Goal(0,"Thing1", 0, false, Goal.Frequency.ONETIME, Goal.GoalContext.HOME),
+            new Goal(1,"Thing2", 1, false, Goal.Frequency.ONETIME, Goal.GoalContext.WORK)
+            //new Goal(2,"School", 2, false, Goal.Frequency.ONETIME, Goal.GoalContext.SCHOOL),
+            //new Goal(3,"Errand", 3, false, Goal.Frequency.ONETIME, Goal.GoalContext.ERRANDS)
             );
 
     public static InMemoryDataSource fromDefault() {

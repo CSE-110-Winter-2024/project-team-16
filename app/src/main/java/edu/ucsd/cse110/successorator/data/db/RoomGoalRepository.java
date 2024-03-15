@@ -22,15 +22,19 @@ public class RoomGoalRepository implements IGoalRepository {
     private final GoalDao goalDao;
 
     private int nextId = 0;
-    private int topOfFinished = 4;
-    private int begOfWork = 1;
-    private int begOfSchool = 2;
-    private int begOfErrands = 3;
-    private int minSortOrder = 0;
-    private int maxSortOrder = 3;
+    private int topOfFinished ;
+    private int begOfWork ;
+    private int begOfSchool ;
+    private int begOfErrands ;
+    private int minSortOrder ;
+    private int maxSortOrder ;
 
     public RoomGoalRepository(GoalDao goalDao) {
         this.goalDao = goalDao;
+        getTopOfCrossedOffGoals();
+        getBegOfErrandGoals();
+        getBegOfSchoolGoals();
+        getBegOfWorkGoals();
     }
 
     @Override
@@ -99,6 +103,10 @@ public class RoomGoalRepository implements IGoalRepository {
     public void append(Goal goal) {
         var fixedGoal = preInsert(goal);
         postInsert();
+        getTopOfCrossedOffGoals();
+        getBegOfErrandGoals();
+        getBegOfSchoolGoals();
+        getBegOfWorkGoals();
 //        fixedGoal = fixedGoal.withSortOrder(goalDao.getMaxSortOrder()+1);
 //        System.out.println("New Goal ID: " + fixedGoal.id());
         switch(goal.goalContext()) {
@@ -160,6 +168,9 @@ public class RoomGoalRepository implements IGoalRepository {
         goalDao.delete(id);
         // Update topOfFinished
         getTopOfCrossedOffGoals();
+        getBegOfErrandGoals();
+        getBegOfSchoolGoals();
+        getBegOfWorkGoals();
         System.out.print(newGoalEntity.mit + " is ");
 
         // Check if the goal is getting crossed off.
@@ -303,6 +314,105 @@ public class RoomGoalRepository implements IGoalRepository {
             // end of the list.
             topOfFinished = goalDao.getMaxSortOrder()+1;
             System.out.println("Top of crossed off is now: " + topOfFinished);
+        }
+
+    }
+
+    private void getBegOfWorkGoals() {
+
+        // Get a list of all the current GoalEntity objects.
+        var entities = goalDao.findAll();
+        assert entities != null;
+
+        // DEBUG -- print out the entities and their sort order number.
+        for (var entity : entities) {
+            System.out.println(entity.mit + " " + entity.sortOrder);
+        }
+        System.out.println(" ");
+
+        // Sort the list by sortOrder, filter it to include only the crossed off goals,
+        // and return the first goal that is crossed off, otherwise return null.
+        GoalEntity begOfWorkGoal = entities.stream()
+                .sorted(Comparator.comparing(e -> e.sortOrder))
+                .filter(e -> !e.isCrossed)
+                .filter(e -> e.goalContext == Goal.GoalContext.WORK)
+                .findFirst()
+                .orElse(null);
+
+        // If there is an already existing crossed off goal at the top,
+        // Set the topOfFinished to that goal's sortOrder.
+        if (begOfWorkGoal != null) {
+            begOfWork = begOfWorkGoal.sortOrder;
+        } else {
+            // There is no existing crossed off goal, so just set topOfFinished to the
+            // end of the list.
+            begOfWork = begOfSchool;
+        }
+
+    }
+
+    private void getBegOfSchoolGoals() {
+
+        // Get a list of all the current GoalEntity objects.
+        var entities = goalDao.findAll();
+        assert entities != null;
+
+        // DEBUG -- print out the entities and their sort order number.
+        for (var entity : entities) {
+            System.out.println(entity.mit + " " + entity.sortOrder);
+        }
+        System.out.println(" ");
+
+        // Sort the list by sortOrder, filter it to include only the crossed off goals,
+        // and return the first goal that is crossed off, otherwise return null.
+        GoalEntity begOfSchoolGoal = entities.stream()
+                .sorted(Comparator.comparing(e -> e.sortOrder))
+                .filter(e -> !e.isCrossed)
+                .filter(e -> e.goalContext == Goal.GoalContext.SCHOOL)
+                .findFirst()
+                .orElse(null);
+
+        // If there is an already existing crossed off goal at the top,
+        // Set the topOfFinished to that goal's sortOrder.
+        if (begOfSchoolGoal != null) {
+            begOfSchool = begOfSchoolGoal.sortOrder;
+        } else {
+            // There is no existing crossed off goal, so just set topOfFinished to the
+            // end of the list.
+            begOfSchool = begOfErrands;
+        }
+
+    }
+
+    private void getBegOfErrandGoals() {
+
+        // Get a list of all the current GoalEntity objects.
+        var entities = goalDao.findAll();
+        assert entities != null;
+
+        // DEBUG -- print out the entities and their sort order number.
+        for (var entity : entities) {
+            System.out.println(entity.mit + " " + entity.sortOrder);
+        }
+        System.out.println(" ");
+
+        // Sort the list by sortOrder, filter it to include only the crossed off goals,
+        // and return the first goal that is crossed off, otherwise return null.
+        GoalEntity begOfErrandGoal = entities.stream()
+                .sorted(Comparator.comparing(e -> e.sortOrder))
+                .filter(e -> !e.isCrossed)
+                .filter(e -> e.goalContext == Goal.GoalContext.ERRANDS)
+                .findFirst()
+                .orElse(null);
+
+        // If there is an already existing crossed off goal at the top,
+        // Set the topOfFinished to that goal's sortOrder.
+        if (begOfErrandGoal != null) {
+            begOfErrands = begOfErrandGoal.sortOrder;
+        } else {
+            // There is no existing crossed off goal, so just set topOfFinished to the
+            // end of the list.
+            begOfErrands = topOfFinished;
         }
 
     }
