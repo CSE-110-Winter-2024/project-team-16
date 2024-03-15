@@ -25,9 +25,11 @@ import java.util.Calendar;
 import edu.ucsd.cse110.successorator.databinding.ActivityMainBinding;
 //import edu.ucsd.cse110.successorator.app.ui.GoalListFragment;
 import edu.ucsd.cse110.successorator.ui.dialog.AddGoalDialogFragment;
+import edu.ucsd.cse110.successorator.ui.dialog.FocusModeDialogFragment;
 
 public class MainActivity extends AppCompatActivity {
     private SharedPreferences mockedDate;
+
     public Calendar calendar;
 
     @Override
@@ -64,11 +66,18 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-//        else if(itemId == R.id.home) {
-//
-//        }
+        else if(itemId == android.R.id.home) {
+            focusMode();
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void focusMode() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(FocusModeDialogFragment.newInstance(), "FocusModeDialogFragment")
+                .commit();
     }
 
     //TODO: display AddGoalDialogFragment. When goal is entered, display GoalList
@@ -91,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
  */
+
 
 
         /*

@@ -31,8 +31,6 @@ import edu.ucsd.cse110.successorator.lib.util.Subject;
 public class MainViewModel extends ViewModel {
     private final IGoalRepository goalRepository;
     private final MutableSubject<List<GoalEntity>> orderedGoals;
-    // private final MutableSubject<Boolean> isCrossedOff;
-    // private final MutableSubject<String> displayedText;
 
     public static final ViewModelInitializer<MainViewModel> initializer =
             new ViewModelInitializer<>(
@@ -48,11 +46,8 @@ public class MainViewModel extends ViewModel {
 
         // Create the observable subjects.
         this.orderedGoals = new SimpleSubject<>();
-        // this.isCrossedOff = new SimpleSubject<>();
-        //this.displayedText = new SimpleSubject<>();
 
         // Initialize...
-        // isCrossedOff.setValue(false);
 
         // When the list of cards changes (or is first loaded), reset the ordering.
         goalRepository.findAll().observe(goals -> {
@@ -68,6 +63,7 @@ public class MainViewModel extends ViewModel {
         });
 
     }
+
 
     public Subject<List<GoalEntity>> getOrderedGoals() {
         return orderedGoals;
