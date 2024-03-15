@@ -34,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mockedDate = getSharedPreferences("mockedDate", Context.MODE_PRIVATE);
-        setDate();
+        calendar = Calendar.getInstance();
+        formatDate(calendar);
         var view = ActivityMainBinding.inflate(getLayoutInflater(), null, false);
         //view.placeholderText.setText(R.string.empty_list_greeting);
 
@@ -105,17 +106,17 @@ public class MainActivity extends AppCompatActivity {
         //dialogFragment.show(getParentFragmentManager(), "AddGoalDialogFragment");
     }
 
-    /**
-     * Set the title as the current date
-     *
-     * @author Yubing Lin
-     */
-    private void setDate() {
-        calendar = Calendar.getInstance();
-
-        //Format the date as "Weekday MM/DD"
-        formatDate(calendar);
-    }
+//    /**
+//     * Set the title as the current date
+//     *
+//     * @author Yubing Lin
+//     */
+//    private void setDate() {
+//        calendar = Calendar.getInstance();
+//
+//        //Format the date as "Weekday MM/DD"
+//        formatDate(calendar);
+//    }
 
     /**
      * Increment the title by one day
