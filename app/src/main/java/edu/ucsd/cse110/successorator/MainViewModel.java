@@ -1,28 +1,18 @@
 package edu.ucsd.cse110.successorator;
 
-import static android.content.Context.MODE_PRIVATE;
 import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY;
 
 import static java.util.Arrays.stream;
 
-import static edu.ucsd.cse110.successorator.lib.data.InMemoryDataSource.calendarToString;
-
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 import androidx.annotation.NonNull;
 
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -31,7 +21,6 @@ import java.util.stream.Collectors;
 
 import edu.ucsd.cse110.successorator.data.db.GoalEntity;
 import edu.ucsd.cse110.successorator.lib.domain.Goal;
-import edu.ucsd.cse110.successorator.lib.domain.GoalRepository;
 
 import edu.ucsd.cse110.successorator.lib.domain.IGoalRepository;
 import edu.ucsd.cse110.successorator.lib.util.MutableSubject;
@@ -82,7 +71,7 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
 //                    .collect(Collectors.toList());
 //            orderedGoals.setValue(newOrderedGoals);
 
-            var activeGoals = getActive(goals);
+            var activeGoals = getToday(goals);
 
             currentGoals = new ArrayList<>(goals);
             //orderedGoals.setValue(activeGoals);
@@ -97,7 +86,7 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
         if (currentGoals == null) return;
         String mode = sharedMode.getString("mode", "Tod ");
         if (mode.equals("Tod ")) {
-            showGoals = getActive(currentGoals);
+            showGoals = getToday(currentGoals);
         } else if (mode.equals("Tmr ")) {
             showGoals = getTmr();
         } else if (mode.equals("Recurring")){
@@ -153,7 +142,8 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
                 .filter(goal -> goal.frequency() == Goal.Frequency.DAILY ||
                         (goal.frequency() == Goal.Frequency.WEEKLY && shouldAddWeekly(goal)) ||
                         (goal.frequency() == Goal.Frequency.MONTHLY && shouldAddMonthly(goal)) ||
-                        (goal.frequency() == Goal.Frequency.YEARLY && shouldAddYearly(goal)))
+                        (goal.frequency() == Goal.Frequency.YEARLY && shouldAddYearly(goal)) ||
+                        goal.frequency() == Goal.Frequency.ONETIME && shouldAddOneTime(goal))
                 .map(goal -> {
                     if (goal.isCrossed()) goal.toggle();
                     return goal;
@@ -163,10 +153,17 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
                 .collect(Collectors.toList());
     }
 
+    private boolean shouldAddOneTime(Goal goal) {
+        return stringToDateTime(goal.recurStart()).toLocalDate()
+                .isEqual(getMockedDateTime().plusDays(1).toLocalDate());
+    }
+
     @NonNull
-    private List<GoalEntity> getActive(List<Goal> currentGoals) {
+    private List<GoalEntity> getToday(List<Goal> currentGoals) {
         return currentGoals.stream()
-                .filter(Goal::isActive)
+                .filter(goal -> goal.isActive() &&
+                        (LocalDateTime.parse(goal.recurStart()).isBefore(getMockedDateTime()) ||
+                        LocalDateTime.parse(goal.recurStart()).isEqual(getMockedDateTime())))
                 .sorted(Comparator.comparingInt(Goal::sortOrder))
                 .map(GoalEntity::fromGoal)
                 .collect(Collectors.toList());
@@ -192,7 +189,7 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
     }
 
     private boolean shouldAddWeekly(Goal goal) {
-        goalRepository.append(new Goal(20,getMockedDateTime().plusDays(1).getDayOfWeek().toString(), 0, false, Goal.Frequency.DAILY, calendarToString(), Goal.GoalContext.HOME, true));
+        //goalRepository.append(new Goal(20,getMockedDateTime().plusDays(1).getDayOfWeek().toString(), 0, false, Goal.Frequency.DAILY, calendarToString(), Goal.GoalContext.HOME, true));
         return stringToDateTime(goal.recurStart()).getDayOfWeek()
                 .equals(getMockedDateTime().plusDays(1).getDayOfWeek());
     }
