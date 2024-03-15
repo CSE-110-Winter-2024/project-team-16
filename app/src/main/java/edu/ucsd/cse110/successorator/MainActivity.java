@@ -29,13 +29,15 @@ import edu.ucsd.cse110.successorator.ui.dialog.AddGoalDialogFragment;
 public class MainActivity extends AppCompatActivity {
     private SharedPreferences mockedDate;
     public Calendar calendar;
+    private SharedPreferences sharedMode;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mockedDate = getSharedPreferences("mockedDate", Context.MODE_PRIVATE);
+        sharedMode = getSharedPreferences("sharedMode", Context.MODE_PRIVATE);
         calendar = Calendar.getInstance();
-        formatDate(calendar);
+        setModeTitle();
         var view = ActivityMainBinding.inflate(getLayoutInflater(), null, false);
         //view.placeholderText.setText(R.string.empty_list_greeting);
 
@@ -125,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void incDate() {
         calendar.add(Calendar.DAY_OF_MONTH, 1);
-        formatDate(calendar);
+        setModeTitle();
     }
 
     /**
@@ -134,17 +136,30 @@ public class MainActivity extends AppCompatActivity {
      * @param calendar the date to be set as title
      * @author Yubing Lin
      */
-    private void formatDate(Calendar calendar) {
+    private String formatDate(Calendar calendar) {
         //From ChatGPT, formatting the date as designed pattern
         DateFormatSymbols dfs = new DateFormatSymbols();
         String[] weekdays = dfs.getWeekdays();
         String weekday = weekdays[calendar.get(Calendar.DAY_OF_WEEK)];
 
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
-        String formattedDate = weekday + " " + sdf.format(calendar.getTime());
-        setTitle(formattedDate);
+        String formattedDate = weekday.substring(0, 3) + " " + sdf.format(calendar.getTime());
 
         updateShared(calendar);
+        return formattedDate;
+    }
+
+    private void setModeTitle() {
+        String mode = sharedMode.getString("mode", "Tod ");
+        if (mode.equals("Tod ")) {
+            setTitle(mode+formatDate(calendar));
+        } else if (mode.equals("Tmr ")) {
+            Calendar tmrCalendar = (Calendar) calendar.clone();
+            tmrCalendar.add(Calendar.DAY_OF_MONTH, 1);
+            setTitle(mode+formatDate(tmrCalendar));
+        } else {
+            setTitle(mode);
+        }
     }
 
     private void updateShared(Calendar calendar) {
@@ -154,31 +169,6 @@ public class MainActivity extends AppCompatActivity {
         mockedDate.edit().putString("mockedTime",dateString).apply();
     }
 
-
-//    /**
-//     * Getter for testing
-//     *
-//     * @return the current localDate that is set as title
-//     * @author Yubing Lin
-//     */
-//    public LocalDate getLocalDate() {
-//        return localDate;
-//    }
-//
-//    /**
-//     * A public method calling incDate for testing
-//     *
-//     * @return the current localDate that is set as title
-//     * @author Yubing Lin
-//     */
-//    public LocalDate getIncDate() {
-//        incDate();
-//        return localDate;
-//    }
-
-
-
-
     private void dropDown(){
         View viewDrop = findViewById(R.id.v_dropdown);
         PopupMenu dropDown = new PopupMenu(this,viewDrop);
@@ -186,18 +176,23 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item){
                 if (item.getItemId() == R.id.today){
-
+                    sharedMode.edit().putString("mode", "Tod ").apply();
+                    setModeTitle();
                 }
 
                 else if (item.getItemId() == R.id.tomorrow){
+                    sharedMode.edit().putString("mode", "Tmr ").apply();
+                    setModeTitle();
                     return false;
                 }
 
                 else if (item.getItemId() == R.id.pending){
+                    sharedMode.edit().putString("mode", "Pending").apply();
+                    setModeTitle();
                     return false;
-                }
-
-                else if (item.getItemId() == R.id.reccuring){
+                } else if (item.getItemId() == R.id.reccuring){
+                    sharedMode.edit().putString("mode", "Recurring").apply();
+                    setModeTitle();
                     return false;
                 }
 
@@ -210,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
 
         dropDown.inflate(R.menu.dropdown_menu);
         dropDown.show();
+
 
     }
 

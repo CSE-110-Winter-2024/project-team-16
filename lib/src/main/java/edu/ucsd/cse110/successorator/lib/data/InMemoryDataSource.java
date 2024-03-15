@@ -34,9 +34,9 @@ public class InMemoryDataSource {
 
     public final static List<Goal> TEST_GOALS = List.of(
             new Goal(0,"Thing1", 0, false, Goal.Frequency.ONETIME, calendarToString(), Goal.GoalContext.HOME, true),
-            new Goal(1,"Thing2", 1, false, Goal.Frequency.ONETIME, calendarToString(), Goal.GoalContext.SCHOOL, true)
-            //new Goal(2,"School", 2, false, Goal.Frequency.ONETIME, Goal.GoalContext.SCHOOL),
-            //new Goal(3,"Errand", 3, false, Goal.Frequency.ONETIME, Goal.GoalContext.ERRANDS)
+            new Goal(1,"Thing2", 1, false, Goal.Frequency.DAILY, calendarToString(), Goal.GoalContext.SCHOOL, true),
+            new Goal(2,"School", 2, false, Goal.Frequency.WEEKLY, calendarToString(), Goal.GoalContext.SCHOOL, true),
+            new Goal(3,"Errand", 3, false, Goal.Frequency.PENDING, calendarToString(), Goal.GoalContext.ERRANDS, true)
             );
 
 
