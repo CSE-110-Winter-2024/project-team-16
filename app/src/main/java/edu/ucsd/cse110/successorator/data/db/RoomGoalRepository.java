@@ -31,6 +31,7 @@ public class RoomGoalRepository implements IGoalRepository {
 
     public RoomGoalRepository(GoalDao goalDao) {
         this.goalDao = goalDao;
+        getNextId();
         getTopOfCrossedOffGoals();
         getBegOfErrandGoals();
         getBegOfSchoolGoals();
@@ -103,6 +104,7 @@ public class RoomGoalRepository implements IGoalRepository {
     public void append(Goal goal) {
         var fixedGoal = preInsert(goal);
         postInsert();
+        getNextId();
         getTopOfCrossedOffGoals();
         getBegOfErrandGoals();
         getBegOfSchoolGoals();
@@ -169,6 +171,7 @@ public class RoomGoalRepository implements IGoalRepository {
         // Delete the old version of the goal
         goalDao.delete(id);
         // Update topOfFinished
+        getNextId();
         getTopOfCrossedOffGoals();
         getBegOfErrandGoals();
         getBegOfSchoolGoals();
@@ -302,6 +305,13 @@ public class RoomGoalRepository implements IGoalRepository {
     private Goal preInsert(Goal goal) {
         var id = goal.id();
         if (id == null) {
+            List<GoalEntity> allGoals = goalDao.findAll();
+            if (allGoals.isEmpty()) {
+                nextId = 0;
+                System.out.println("Next ID should be: " + nextId);
+                goal = goal.withId(nextId);
+                return goal;
+            }
 
             int maxId = goalDao.findAll().stream()
                     .max(Comparator.comparing(e -> e.id)).get().id;
@@ -477,4 +487,33 @@ public class RoomGoalRepository implements IGoalRepository {
 //                .map(GoalEntity::toGoal)
 //                .collect(Collectors.toList());
 //    }
+
+    private void getNextId() {
+
+        // Get a list of all the current GoalEntity objects.
+        var entities = goalDao.findAll();
+        assert entities != null;
+
+        // DEBUG -- print out the entities and their sort order number.
+        for (var entity : entities) {
+            System.out.println(entity.mit + " " + entity.sortOrder);
+        }
+        System.out.println(" ");
+
+        // Sort the list by sortOrder, filter it to include only the crossed off goals,
+        // and return the first goal that is crossed off, otherwise return null.
+        GoalEntity greatestIdGoal = entities.stream().min(Comparator.comparing(e -> -e.id))
+                .orElse(null);
+
+        // If there is an already existing crossed off goal at the top,
+        // Set the topOfFinished to that goal's sortOrder.
+        if (greatestIdGoal != null) {
+            nextId = greatestIdGoal.id + 1;
+        } else {
+            // There is no existing crossed off goal, so just set topOfFinished to the
+            // end of the list.
+            nextId = 0;
+        }
+
+    }
 }
