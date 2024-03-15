@@ -1,5 +1,7 @@
 package edu.ucsd.cse110.successorator.lib.data;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +17,10 @@ public class InMemoryDataSource {
     private int minSortOrder = Integer.MAX_VALUE;
     private int maxSortOrder = Integer.MIN_VALUE;
 
-    private int begOfCrossed = 2;
+    private int begOfCrossed = 0;
+    private int begOfWork = 0;
+    private int begOfSchool = 0;
+    private int begOfErrands = 0;
 
     private final Map<Integer, Goal> goals
             = new HashMap<>();
@@ -28,9 +33,22 @@ public class InMemoryDataSource {
     }
 
     public final static List<Goal> TEST_GOALS = List.of(
-            new Goal(0,"Thing1", 0, false, Goal.Frequency.ONETIME, Goal.GoalContext.HOME),
-            new Goal(1,"Thing2", 1, false, Goal.Frequency.ONETIME, Goal.GoalContext.SCHOOL)
-    );
+            new Goal(0,"Thing1", 0, false, Goal.Frequency.ONETIME, calendarToString(), Goal.GoalContext.HOME, true),
+            new Goal(1,"Thing2", 1, false, Goal.Frequency.DAILY, calendarToString(), Goal.GoalContext.SCHOOL, true),
+            new Goal(2,"School", 2, false, Goal.Frequency.WEEKLY, calendarToString(), Goal.GoalContext.SCHOOL, true),
+            new Goal(3,"Errand", 3, false, Goal.Frequency.PENDING, calendarToString(), Goal.GoalContext.ERRANDS, true)
+            );
+
+
+    public static String calendarToString() {
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        // Define the desired date-time format
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        // Format the LocalDateTime object using the formatter
+        return dateTime.format(formatter);
+    }
 
     public static InMemoryDataSource fromDefault() {
         var data = new InMemoryDataSource();
@@ -143,8 +161,33 @@ public class InMemoryDataSource {
     }
 
     public void append(Goal goal) {
-        shiftSortOrders(begOfCrossed, maxSortOrder, 1);
-        putGoal(goal.withSortOrder(begOfCrossed));
+
+        switch(goal.goalContext()) {
+            case HOME:
+                shiftSortOrders(begOfWork, maxSortOrder, 1);
+                putGoal(goal.withSortOrder(begOfWork));
+                begOfWork++;
+                begOfSchool++;
+                begOfErrands++;
+                break;
+            case WORK:
+                shiftSortOrders(begOfSchool, maxSortOrder, 1);
+                putGoal(goal.withSortOrder(begOfSchool));
+                begOfSchool++;
+                begOfErrands++;
+                break;
+            case SCHOOL:
+                shiftSortOrders(begOfErrands, maxSortOrder, 1);
+                putGoal(goal.withSortOrder(begOfErrands));
+                begOfErrands++;
+                break;
+            case ERRANDS:
+                shiftSortOrders(begOfCrossed, maxSortOrder, 1);
+                putGoal(goal.withSortOrder(begOfCrossed));
+                break;
+        }
+        //shiftSortOrders(begOfCrossed, maxSortOrder, 1);
+        //putGoal(goal.withSortOrder(begOfCrossed));
         begOfCrossed++;
     }
 
@@ -231,5 +274,23 @@ public class InMemoryDataSource {
             //Notify the listener that goals change
             allGoalsSubject.setValue(getGoals());
         }
+    }
+
+    public void inActiveGoal(Integer id) {
+        var goal = goals.get(id);
+        goal.inActive();
+
+        //shiftSortOrders(goal.sortOrder() + 1, maxSortOrder, -1);
+
+        allGoalsSubject.setValue(getGoals());
+    }
+
+    public void activeGoal(Integer id) {
+        var goal = goals.get(id);
+        goal.active();
+
+        //shiftSortOrders(goal.sortOrder() + 1, maxSortOrder, -1);
+
+        allGoalsSubject.setValue(getGoals());
     }
 }

@@ -120,7 +120,7 @@ public interface GoalDao {
     default int prepend(GoalEntity goal) {
         // Shift all the existing goals down the list by 1.
         shiftSortOrders(getMinSortOrder(), getMaxSortOrder(), 1);
-        var newGoal = new GoalEntity(goal.id, goal.mit, getMinSortOrder() - 1, goal.isCrossed, goal.frequency, goal.goalContext);
+        var newGoal = new GoalEntity(goal.id, goal.mit, getMinSortOrder() - 1, goal.isCrossed, goal.frequency, goal.recurStart, goal.goalContext, goal.isActive);
         return Math.toIntExact(insert(newGoal));
     }
 
@@ -141,4 +141,16 @@ public interface GoalDao {
      */
     @Query("DELETE FROM goals WHERE id = :id")
     void delete(int id);
+
+    @Transaction
+    default int inActive(GoalEntity goal) {
+        goal.isActive = false;
+        return Math.toIntExact(insert(goal));
+    }
+
+    @Transaction
+    default int active(GoalEntity goal) {
+        goal.isActive = true;
+        return Math.toIntExact(insert(goal));
+    }
 }

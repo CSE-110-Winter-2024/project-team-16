@@ -16,6 +16,8 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 import edu.ucsd.cse110.successorator.data.db.RoomGoalRepository;
 import edu.ucsd.cse110.successorator.data.db.SuccessoratorDatabase;
@@ -24,68 +26,25 @@ import edu.ucsd.cse110.successorator.lib.domain.Goal;
 import edu.ucsd.cse110.successorator.lib.domain.GoalRepository;
 import edu.ucsd.cse110.successorator.lib.domain.IGoalRepository;
 
-public class SuccessoratorApplication extends Application {
-    private InMemoryDataSource dataSource;
-    private IGoalRepository goalRepository;
-    private SharedPreferences mockedDate;
-    private SharedPreferences sharedMode;
-    private MutableLiveData<String> mockedDateLive = new MutableLiveData<>();
+public class SimplifiedApplication {
+    private GoalRepository goalRepository;
+    String execution;
+    String current;
     private static final int TIME_TO_DELETE = 2;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        //this.dataSource = InMemoryDataSource.fromDefault();
-        //this.goalRepository = new GoalRepository(dataSource);
-        var database = Room.databaseBuilder(
-                getApplicationContext(),
-                SuccessoratorDatabase.class,
-                "successorator-database"
-            )
-                .allowMainThreadQueries()
-                .build();
-
-        this.goalRepository = new RoomGoalRepository(database.goalDao());
-
-        var sharedPreferences = getSharedPreferences("successorator", MODE_PRIVATE);
-        var isFirstRun = sharedPreferences.getBoolean("isFirstRun", true);
-
-        if(isFirstRun && database.goalDao().count() == 0) {
-            goalRepository.save(InMemoryDataSource.TEST_GOALS);
-
-            sharedPreferences.edit()
-                    .putBoolean("isFirstRun", false)
-                    .apply();
-        }
-
-
-        mockedDate = getSharedPreferences("mockedDate", MODE_PRIVATE);
-        //mockedDateLive.setValue(mockedDate.getString("mockedTime", "0001-01-01 00:00:00"));
-        sharedMode = getSharedPreferences("sharedMode", MODE_PRIVATE);
-
-        mockedDate.registerOnSharedPreferenceChangeListener((sharedPrefs, key) -> {
-            if ("mockedTime".equals(key)) {
-                //mockedDateLive.postValue(sharedPrefs.getString(key, "0001-01-01 00:00:00"));
-                addRecurring();
-                callDeleteDecision();
-                //deleteCrossedGoals();
-            }
-        });
-
-        addRecurring();
-        callDeleteDecision();
+    public SimplifiedApplication(List<Goal> goals, String executionTime, String currentTime) {
+        InMemoryDataSource dataSource = new InMemoryDataSource();
+        dataSource.putGoals(goals);
+        goalRepository = new GoalRepository(dataSource);
+        execution = executionTime;
+        current = currentTime;
     }
-
-    public SharedPreferences getMode() {return sharedMode;}
-
-    public SharedPreferences getDate() {return mockedDate;}
 
     public void callDeleteDecision(){
         if (deleteCrossedGoalsNotExecutedToday()) {deleteCrossedGoals();}
     }
 
-    private void addRecurring() {
+    public void addRecurring() {
         for (Goal goal: goalRepository.getRecurringGoals()) {
             switch (goal.frequency()) {
                 case DAILY:
@@ -150,13 +109,11 @@ public class SuccessoratorApplication extends Application {
     }
 
     private LocalDateTime getExecutedDateTime(){
-        String executedTime = mockedDate.getString("lastExecution", "0001-01-01 00:00:00");
-        return stringToDateTime(executedTime);
+        return stringToDateTime(execution);
     }
 
     private LocalDateTime getMockedDateTime(){
-        String mockedTime = mockedDate.getString("mockedTime", "0001-01-01 00:00:00");
-        return stringToDateTime(mockedTime);
+        return stringToDateTime(current);
     }
 
     private boolean executedBefore2AM(){
@@ -192,8 +149,8 @@ public class SuccessoratorApplication extends Application {
         goalRepository.deleteCrossedGoals();
 
         //Update the record of last deletion execution
-        String mockedTime = mockedDate.getString("mockedTime", "0001-01-01 00:00:00");
-        mockedDate.edit().putString("lastExecution", mockedTime).apply();
+//        String mockedTime = mockedDate.getString("mockedTime", "0001-01-01 00:00:00");
+//        mockedDate.edit().putString("lastExecution", mockedTime).apply();
     }
 
     private Calendar dateTimeToCalendar(LocalDateTime localDateTime) {
