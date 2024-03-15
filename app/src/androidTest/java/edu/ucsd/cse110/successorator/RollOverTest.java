@@ -46,7 +46,7 @@ public class RollOverTest {
 //            scenario.moveToState(Lifecycle.State.STARTED);
 //        }
 //    }
-    public final static List<Goal> TEST_GOALS = List.of(
+    public final static List<Goal> NO_CROSSED_GOALS = List.of(
             new Goal(0,"Thing1", 0, false, Goal.Frequency.ONETIME, calendarToString(), Goal.GoalContext.HOME, true),
             new Goal(1,"Thing2", 1, false, Goal.Frequency.ONETIME, calendarToString(), Goal.GoalContext.SCHOOL, true),
             new Goal(2, "inactive_daily", 2, false, Goal.Frequency.DAILY, calendarToString(), Goal.GoalContext.HOME, false),
@@ -54,7 +54,15 @@ public class RollOverTest {
             new Goal(4, "inactive_monthly", 4, false, Goal.Frequency.MONTHLY, calendarToString(), Goal.GoalContext.HOME, false)
     );
 
-    public MockedSuccessoratorApplication sa = new MockedSuccessoratorApplication();
+    public final static List<Goal> SOME_CROSSED_GOALS = List.of(
+            new Goal(0,"Thing1", 0, true, Goal.Frequency.ONETIME, calendarToString(), Goal.GoalContext.HOME, true),
+            new Goal(1,"Thing2", 1, false, Goal.Frequency.ONETIME, calendarToString(), Goal.GoalContext.SCHOOL, true),
+            new Goal(2, "inactive_daily", 2, true, Goal.Frequency.DAILY, calendarToString(), Goal.GoalContext.HOME, false),
+            new Goal(3, "active_weekly", 3, false, Goal.Frequency.WEEKLY, calendarToString(), Goal.GoalContext.HOME, false),
+            new Goal(4, "inactive_monthly", 4, false, Goal.Frequency.MONTHLY, calendarToString(), Goal.GoalContext.HOME, false)
+    );
+
+    public SimplifiedApplication sa;
 
     private static String calendarToString() {
         LocalDateTime dateTime = LocalDateTime.now();
@@ -66,11 +74,28 @@ public class RollOverTest {
         return dateTime.format(formatter);
     }
 
-//    @Test
-//    public void rollOverTest() {
-//        assertEquals(Integer.valueOf(5), sa.getGoalRepository().count());
-//        sa.callDeleteDecision();
-//        assertEquals(Integer.valueOf(5), sa.getGoalRepository().count());
-//    }
+    @Test
+    public void rollOverAllTest() {
+        sa = new SimplifiedApplication(NO_CROSSED_GOALS, "0001-01-01 00:00:00", "0001-01-01 04:00:00");
+        assertEquals(Integer.valueOf(5), sa.getGoalRepository().count());
+        sa.callDeleteDecision();
+        assertEquals(Integer.valueOf(5), sa.getGoalRepository().count());
+    }
+
+    @Test
+    public void rollOverUncrossedTest() {
+        sa = new SimplifiedApplication(SOME_CROSSED_GOALS, "0001-01-01 02:00:00", "0001-01-02 02:00:00");
+        assertEquals(Integer.valueOf(5), sa.getGoalRepository().count());
+        sa.callDeleteDecision();
+        assertEquals(Integer.valueOf(4), sa.getGoalRepository().count());
+    }
+
+    @Test
+    public void rollOverInDayTest() {
+        sa = new SimplifiedApplication(SOME_CROSSED_GOALS, "0001-01-01 02:00:00", "0001-01-01 04:00:00");
+        assertEquals(Integer.valueOf(5), sa.getGoalRepository().count());
+        sa.callDeleteDecision();
+        assertEquals(Integer.valueOf(5), sa.getGoalRepository().count());
+    }
 }
 
