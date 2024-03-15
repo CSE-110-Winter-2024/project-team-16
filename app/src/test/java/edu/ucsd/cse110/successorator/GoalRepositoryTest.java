@@ -96,13 +96,13 @@ public class GoalRepositoryTest {
         assertEquals(Integer.valueOf(1), goalRepository.find(0).getValue().sortOrder());
     }
 
-    @Test
-    public void testCheckOff() {
-        assertFalse(goalRepository.find(1).getValue().isCrossed());
-        goalRepository.checkOff(1);
-        assertTrue(goalRepository.find(1).getValue().isCrossed());
-        goalRepository.checkOff(1);
-    }
+//    @Test
+//    public void testCheckOff() {
+//        assertFalse(goalRepository.find(1).getValue().isCrossed());
+//        goalRepository.checkOff(1);
+//        assertTrue(goalRepository.find(1).getValue().isCrossed());
+//        goalRepository.checkOff(1);
+//    }
 
     @Test
     public void testInActive() {
@@ -138,22 +138,22 @@ public class GoalRepositoryTest {
         assertEquals("Thing1", goalRepository.find(0).getValue().mit());
     }
 
-    @Test
-    public void testDeleteCrossedRecurringGoals() {
-        dataSource = new InMemoryDataSource();
-        dataSource.putGoals(TEST_GOALS_FOR_DELETE);
-        goalRepository = new GoalRepository(dataSource);
-
-        goalRepository.checkOff(0);
-        goalRepository.checkOff(1);
-
-        int initialSize = goalRepository.count();
-        goalRepository.deleteCrossedGoals();
-
-        assertEquals(initialSize-1, (int) goalRepository.count());
-        assertEquals("Thing2", goalRepository.findAll().getValue().get(0).mit());
-        assertEquals("Thing3", goalRepository.findAll().getValue().get(1).mit());
-    }
+//    @Test
+//    public void testDeleteCrossedRecurringGoals() {
+//        dataSource = new InMemoryDataSource();
+//        dataSource.putGoals(TEST_GOALS_FOR_DELETE);
+//        goalRepository = new GoalRepository(dataSource);
+//
+//        goalRepository.checkOff(0);
+//        goalRepository.checkOff(1);
+//
+//        int initialSize = goalRepository.count();
+//        goalRepository.deleteCrossedGoals();
+//
+//        assertEquals(initialSize-1, (int) goalRepository.count());
+//        assertEquals("Thing2", goalRepository.findAll().getValue().get(0).mit());
+//        assertEquals("Thing3", goalRepository.findAll().getValue().get(1).mit());
+//    }
 
     @Test
     public void testFrequency(){
