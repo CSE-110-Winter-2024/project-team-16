@@ -58,6 +58,7 @@ public class SuccessoratorApplication extends Application {
                     .apply();
         }
 
+
         mockedDate = getSharedPreferences("mockedDate", MODE_PRIVATE);
         //mockedDateLive.setValue(mockedDate.getString("mockedTime", "0001-01-01 00:00:00"));
 

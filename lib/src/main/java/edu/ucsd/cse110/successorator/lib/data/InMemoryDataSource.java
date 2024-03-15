@@ -18,6 +18,9 @@ public class InMemoryDataSource {
     private int maxSortOrder = Integer.MIN_VALUE;
 
     private int begOfCrossed = 2;
+    private int begOfWork = 1;
+    private int begOfSchool = 2;
+    private int begOfErrands = 2;
 
     private final Map<Integer, Goal> goals
             = new HashMap<>();
@@ -31,11 +34,11 @@ public class InMemoryDataSource {
 
     public final static List<Goal> TEST_GOALS = List.of(
             new Goal(0,"Thing1", 0, false, Goal.Frequency.ONETIME, calendarToString(), Goal.GoalContext.HOME, true),
-            new Goal(1,"Thing2", 1, false, Goal.Frequency.ONETIME, calendarToString(), Goal.GoalContext.SCHOOL, true),
-            new Goal(2, "inactive_daily", 2, false, Goal.Frequency.DAILY, calendarToString(), Goal.GoalContext.HOME, false),
-            new Goal(3, "active_weekly", 3, false, Goal.Frequency.WEEKLY, calendarToString(), Goal.GoalContext.HOME, false),
-            new Goal(4, "inactive_monthly", 4, false, Goal.Frequency.MONTHLY, calendarToString(), Goal.GoalContext.HOME, false)
-    );
+            new Goal(1,"Thing2", 1, false, Goal.Frequency.ONETIME, calendarToString(), Goal.GoalContext.SCHOOL, true)
+            //new Goal(2,"School", 2, false, Goal.Frequency.ONETIME, Goal.GoalContext.SCHOOL),
+            //new Goal(3,"Errand", 3, false, Goal.Frequency.ONETIME, Goal.GoalContext.ERRANDS)
+            );
+
 
     public static String calendarToString() {
         LocalDateTime dateTime = LocalDateTime.now();
@@ -158,8 +161,33 @@ public class InMemoryDataSource {
     }
 
     public void append(Goal goal) {
-        shiftSortOrders(begOfCrossed, maxSortOrder, 1);
-        putGoal(goal.withSortOrder(begOfCrossed));
+
+        switch(goal.goalContext()) {
+            case HOME:
+                shiftSortOrders(begOfWork, maxSortOrder, 1);
+                putGoal(goal.withSortOrder(begOfWork));
+                begOfWork++;
+                begOfSchool++;
+                begOfErrands++;
+                break;
+            case WORK:
+                shiftSortOrders(begOfSchool, maxSortOrder, 1);
+                putGoal(goal.withSortOrder(begOfSchool));
+                begOfSchool++;
+                begOfErrands++;
+                break;
+            case SCHOOL:
+                shiftSortOrders(begOfErrands, maxSortOrder, 1);
+                putGoal(goal.withSortOrder(begOfErrands));
+                begOfErrands++;
+                break;
+            case ERRANDS:
+                shiftSortOrders(begOfCrossed, maxSortOrder, 1);
+                putGoal(goal.withSortOrder(begOfCrossed));
+                break;
+        }
+        //shiftSortOrders(begOfCrossed, maxSortOrder, 1);
+        //putGoal(goal.withSortOrder(begOfCrossed));
         begOfCrossed++;
     }
 

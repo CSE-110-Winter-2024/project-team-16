@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -41,7 +42,19 @@ public class GoalListAdapter extends ArrayAdapter<GoalEntity> {
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        // Get the goal for this position.
+//        // Get the list of goals from the adapter
+//        List<GoalEntity> sortedGoals = new ArrayList<>(super.getCount());
+//        for (int i = 0; i < super.getCount(); i++) {
+//            sortedGoals.add(super.getItem(i));
+//        }
+//
+//        // Sort the list of goals by sortOrder and then by context labels
+//        // If sortOrder is the same, compare context labels
+//        sortedGoals.sort(Comparator.comparingInt((GoalEntity goal) -> goal.sortOrder).thenComparing(goal -> goal.goalContext));
+//
+//        // Get the goal for this position from the sorted list
+//        GoalEntity goal = sortedGoals.get(position);
+//        // Get the goal for this position.
         var goal = getItem(position);
         assert goal != null;
 
