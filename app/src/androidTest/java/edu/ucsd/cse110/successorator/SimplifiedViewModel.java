@@ -37,66 +37,19 @@ import edu.ucsd.cse110.successorator.lib.util.MutableSubject;
 import edu.ucsd.cse110.successorator.lib.util.SimpleSubject;
 import edu.ucsd.cse110.successorator.lib.util.Subject;
 
-public class MainViewModel extends ViewModel implements SharedPreferences.OnSharedPreferenceChangeListener{
-    private final IGoalRepository goalRepository;
-    private final MutableSubject<List<GoalEntity>> orderedGoals;
-    // private final MutableSubject<Boolean> isCrossedOff;
-    // private final MutableSubject<String> displayedText;
-    private SharedPreferences sharedMode;
-    private SharedPreferences mockedDate;
+public class SimplifiedViewModel {
     private List<Goal> currentGoals;
-    List<GoalEntity> showGoals;
+    String mode;
+    String date;
 
-    public static final ViewModelInitializer<MainViewModel> initializer =
-            new ViewModelInitializer<>(
-                    MainViewModel.class,
-                    creationExtras -> {
-                        var app = (SuccessoratorApplication) creationExtras.get(APPLICATION_KEY);
-                        assert app != null;
-                        return new MainViewModel(app.getGoalRepository(), app.getMode(), app.getDate());
-                    });
-
-    public MainViewModel(IGoalRepository goalRepository, SharedPreferences mode, SharedPreferences date) {
-        this.goalRepository = goalRepository;
-
-        // Create the observable subjects.
-        this.orderedGoals = new SimpleSubject<>();
-        // this.isCrossedOff = new SimpleSubject<>();
-        //this.displayedText = new SimpleSubject<>();
-
-        // Initialize...
-        // isCrossedOff.setValue(false);
-
-        sharedMode = mode;
-        sharedMode.registerOnSharedPreferenceChangeListener(this);
-        mockedDate = date;
-        mockedDate.registerOnSharedPreferenceChangeListener(this);
-        // When the list of cards changes (or is first loaded), reset the ordering.
-        goalRepository.findAll().observe(goals -> {
-            if (goals == null)
-                return; // not ready yet, ignore, placeholder text should be displayed
-
-//            var newOrderedGoals = goals.stream()
-//                    .sorted(Comparator.comparingInt(Goal::sortOrder))
-//                    .map(GoalEntity::fromGoal)
-//                    .collect(Collectors.toList());
-//            orderedGoals.setValue(newOrderedGoals);
-
-            var activeGoals = getActive(goals);
-
-            currentGoals = new ArrayList<>(goals);
-            //orderedGoals.setValue(activeGoals);
-            updateShowGoals();
-
-        });
-
-
+    public SimplifiedViewModel(List<Goal> goals, String m, String time) {
+        this.currentGoals = goals;
+        this.mode = m;
+        this.date = time;
     }
 
-    public void updateShowGoals() {
-        List<GoalEntity> showGoals;
-        if (currentGoals == null) return;
-        String mode = sharedMode.getString("mode", "Tod ");
+    public List<Goal> updateShowGoals() {
+        List<Goal> showGoals;
         if (mode.equals("Tod ")) {
             showGoals = getActive(currentGoals);
         } else if (mode.equals("Tmr ")) {
@@ -106,30 +59,28 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
         } else {
             showGoals = getPending();
         }
-        orderedGoals.setValue(showGoals);
+        return showGoals;
     }
 
     @NonNull
-    private List<GoalEntity> getPending() {
+    private List<Goal> getPending() {
         return currentGoals.stream()
                 .filter(goal -> goal.frequency() == Goal.Frequency.PENDING)
                 .sorted(Comparator.comparingInt(Goal::sortOrder))
-                .map(GoalEntity::fromGoal)
                 .collect(Collectors.toList());
     }
 
     @NonNull
-    private List<GoalEntity> getRecur() {
+    private List<Goal> getRecur() {
         return currentGoals.stream()
                 .filter(goal -> goal.frequency() != Goal.Frequency.ONETIME &&
                         goal.frequency() != Goal.Frequency.PENDING)
                 .sorted(Comparator.comparingInt(Goal::sortOrder))
-                .map(GoalEntity::fromGoal)
                 .collect(Collectors.toList());
     }
 
     @NonNull
-    private List<GoalEntity> getTmr() {
+    private List<Goal> getTmr() {
         return currentGoals.stream()
                 .filter(goal -> goal.frequency() == Goal.Frequency.DAILY ||
                         (goal.frequency() == Goal.Frequency.WEEKLY && shouldAddWeekly(goal)) ||
@@ -140,16 +91,14 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
                     return goal;
                 })
                 .sorted(Comparator.comparingInt(Goal::sortOrder))
-                .map(GoalEntity::fromGoal)
                 .collect(Collectors.toList());
     }
 
     @NonNull
-    private List<GoalEntity> getActive(List<Goal> currentGoals) {
+    private List<Goal> getActive(List<Goal> currentGoals) {
         return currentGoals.stream()
                 .filter(Goal::isActive)
                 .sorted(Comparator.comparingInt(Goal::sortOrder))
-                .map(GoalEntity::fromGoal)
                 .collect(Collectors.toList());
     }
 
@@ -159,12 +108,10 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
     }
 
     private LocalDateTime getMockedDateTime(){
-        String mockedTime = mockedDate.getString("mockedTime", "0001-01-01 00:00:00");
-        return stringToDateTime(mockedTime);
+        return stringToDateTime(date);
     }
 
     private boolean shouldAddWeekly(Goal goal) {
-        //goalRepository.append(new Goal(20,getMockedDateTime().plusDays(1).getDayOfWeek().toString(), 0, false, Goal.Frequency.DAILY, calendarToString(), Goal.GoalContext.HOME, true));
         return stringToDateTime(goal.recurStart()).getDayOfWeek()
                 .equals(getMockedDateTime().plusDays(1).getDayOfWeek());
     }
@@ -190,32 +137,27 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
     }
 
     private boolean shouldAddYearly(Goal goal) {
+        System.out.println("mocked day of month" + getMockedDateTime().plusDays(1).getDayOfMonth());
+        System.out.println(getMockedDateTime().plusDays(1).getMonthValue());
+        System.out.println(stringToDateTime(goal.recurStart()).getDayOfMonth());
+        System.out.println(stringToDateTime(goal.recurStart()).getMonthValue());
         return getMockedDateTime().plusDays(1).getDayOfMonth() == stringToDateTime(goal.recurStart()).getDayOfMonth() &&
                 getMockedDateTime().plusDays(1).getMonthValue() == stringToDateTime(goal.recurStart()).getMonthValue();
     }
 
-    public Subject<List<GoalEntity>> getOrderedGoals() {
-        return orderedGoals;
-    }
-
     public void append(Goal goal) {
-        goalRepository.append(goal);
+        currentGoals.add(goal);
     }
 
     public void prepend(Goal goal) {
-        goalRepository.prepend(goal);
+        currentGoals.add(goal);
     }
 
-    public void checkOff(int id) {
-        goalRepository.checkOff(id);
-    }
+//    public void checkOff(int id) {
+//        goalRepository.checkOff(id);
+//    }
+//
+//    public void inActive(int id) {goalRepository.inActive(id);}
 
-    public void inActive(int id) {goalRepository.inActive(id);}
 
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals("mode")) {
-            updateShowGoals();
-        }
-    }
 }

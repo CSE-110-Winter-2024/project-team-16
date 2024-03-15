@@ -35,6 +35,7 @@ public class AddGoalDialogFragment extends DialogFragment {
     private FragmentDialogAddGoalBinding view;
     private MainViewModel activityModel;
     private SharedPreferences mockedDate;
+    private SharedPreferences sharedMode;
 
 
     AddGoalDialogFragment() {
@@ -57,6 +58,7 @@ public class AddGoalDialogFragment extends DialogFragment {
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
         this.mockedDate = getActivity().getSharedPreferences("mockedDate", MODE_PRIVATE);
+        this.sharedMode = getActivity().getSharedPreferences("sharedMode", MODE_PRIVATE);
     }
 
     @NonNull
@@ -187,6 +189,13 @@ public class AddGoalDialogFragment extends DialogFragment {
 
         dialog.dismiss();
     }
+
+//    private Goal createGoal(String mit, Goal.Frequency frequency, Goal.GoalContext context) {
+//        String currentTime = mockedDate.getString("mockedTime", "0001-01-01 00:00:00");
+//        String mode = sharedMode.getString("mode", "Tod ");
+//        if (mode.equals("Tod ")) {return new Goal(null, mit, -1, false, frequency, currentTime, context, true);}
+//        else if (mode.equals("Tmr ")) {return new Goal(null, mit, -1, false, frequency, currentTime, context, true);}
+//    }
 
     private void onNegativeButtonClick(DialogInterface dialog, int which) {
         dialog.cancel();

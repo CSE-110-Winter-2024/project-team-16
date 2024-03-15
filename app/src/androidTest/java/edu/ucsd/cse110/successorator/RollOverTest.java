@@ -65,13 +65,7 @@ public class RollOverTest {
     public SimplifiedApplication sa;
 
     private static String calendarToString() {
-        LocalDateTime dateTime = LocalDateTime.now();
-
-        // Define the desired date-time format
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-        // Format the LocalDateTime object using the formatter
-        return dateTime.format(formatter);
+        return "2024-03-14 12:00:00";
     }
 
     @Test

@@ -79,6 +79,8 @@ public class SuccessoratorApplication extends Application {
 
     public SharedPreferences getMode() {return sharedMode;}
 
+    public SharedPreferences getDate() {return mockedDate;}
+
     public void callDeleteDecision(){
         if (deleteCrossedGoalsNotExecutedToday()) {deleteCrossedGoals();}
     }
