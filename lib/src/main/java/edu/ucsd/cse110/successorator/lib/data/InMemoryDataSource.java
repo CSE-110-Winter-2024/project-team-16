@@ -1,5 +1,7 @@
 package edu.ucsd.cse110.successorator.lib.data;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,17 @@ public class InMemoryDataSource {
             //new Goal(2,"School", 2, false, Goal.Frequency.ONETIME, Goal.GoalContext.SCHOOL),
             //new Goal(3,"Errand", 3, false, Goal.Frequency.ONETIME, Goal.GoalContext.ERRANDS)
             );
+
+
+    public static String calendarToString() {
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        // Define the desired date-time format
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        // Format the LocalDateTime object using the formatter
+        return dateTime.format(formatter);
+    }
 
     public static InMemoryDataSource fromDefault() {
         var data = new InMemoryDataSource();
@@ -261,5 +274,23 @@ public class InMemoryDataSource {
             //Notify the listener that goals change
             allGoalsSubject.setValue(getGoals());
         }
+    }
+
+    public void inActiveGoal(Integer id) {
+        var goal = goals.get(id);
+        goal.inActive();
+
+        //shiftSortOrders(goal.sortOrder() + 1, maxSortOrder, -1);
+
+        allGoalsSubject.setValue(getGoals());
+    }
+
+    public void activeGoal(Integer id) {
+        var goal = goals.get(id);
+        goal.active();
+
+        //shiftSortOrders(goal.sortOrder() + 1, maxSortOrder, -1);
+
+        allGoalsSubject.setValue(getGoals());
     }
 }
