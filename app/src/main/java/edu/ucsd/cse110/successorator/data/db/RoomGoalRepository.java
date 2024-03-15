@@ -161,7 +161,9 @@ public class RoomGoalRepository implements IGoalRepository {
         var goalEntity = goalDao.find(id);
         var newStatus = !goalEntity.isCrossed;
         var newGoalEntity = GoalEntity.fromGoal(
-                new Goal(goalEntity.id, goalEntity.mit, goalEntity.sortOrder, newStatus, goalEntity.frequency,goalEntity.goalContext)
+                new Goal(goalEntity.id, goalEntity.mit, goalEntity.sortOrder, newStatus,
+                        goalEntity.frequency, goalEntity.recurStart, goalEntity.goalContext,
+                        goalEntity.isActive)
         );
 
         // Delete the old version of the goal
@@ -234,6 +236,40 @@ public class RoomGoalRepository implements IGoalRepository {
         }
     }
 
+    @Override
+    public void inActive(int id) {
+        // Find the goal and create a new GoalEntity that is updated.
+        var goalEntity = goalDao.find(id);
+        var newStatus = false;
+        var newGoalEntity = GoalEntity.fromGoal(
+                new Goal(goalEntity.id, goalEntity.mit, goalEntity.sortOrder, goalEntity.isCrossed,
+                        goalEntity.frequency, goalEntity.recurStart, goalEntity.goalContext,
+                        newStatus)
+        );
+
+        // Delete the old version of the goal
+        goalDao.delete(id);
+
+        goalDao.append(newGoalEntity);
+    }
+
+    @Override
+    public void active(int id) {
+        // Find the goal and create a new GoalEntity that is updated.
+        var goalEntity = goalDao.find(id);
+        var newStatus = true;
+        var newGoalEntity = GoalEntity.fromGoal(
+                new Goal(goalEntity.id, goalEntity.mit, goalEntity.sortOrder, goalEntity.isCrossed,
+                        goalEntity.frequency, goalEntity.recurStart, goalEntity.goalContext,
+                        newStatus)
+        );
+
+        // Delete the old version of the goal
+        goalDao.delete(id);
+
+        goalDao.append(newGoalEntity);
+    }
+
     /**
      * Delete the crossed off goals.
      * Pretty much taken straight from InMemoryDataSource.
@@ -245,11 +281,16 @@ public class RoomGoalRepository implements IGoalRepository {
                 .map(e -> e.id)
                 .collect(Collectors.toList());
 
-        System.out.println("Crossed Goals IDs: " + crossedGoals);
+        //System.out.println("Crossed Goals IDs: " + crossedGoals);
 
         for (Integer id: crossedGoals) {
-            goalDao.delete(id);
-            System.out.println("Deleted Goal ID: " + id);
+            if (!goalDao.find(id).frequency.equals(Goal.Frequency.ONETIME) && !goalDao.find(id).frequency.equals(Goal.Frequency.PENDING)) {
+                var goalEntity = goalDao.find(id);
+                goalDao.inActive(goalEntity);
+            } else {
+                goalDao.delete(id);
+            }
+            //System.out.println("Deleted Goal ID: " + id);
         }
     }
 
@@ -416,4 +457,24 @@ public class RoomGoalRepository implements IGoalRepository {
         }
 
     }
+
+  @Override
+    public List<Goal> getRecurringGoals() {
+        List<GoalEntity> recurring = goalDao.findAll().stream()
+                .filter(goal -> goal.frequency != Goal.Frequency.ONETIME && goal.frequency != Goal.Frequency.PENDING)
+                .collect(Collectors.toList());
+        return recurring.stream()
+                .map(GoalEntity::toGoal)
+                .collect(Collectors.toList());
+    }
+
+//    @Override
+//    public List<Goal> getActiveGoals() {
+//        List<GoalEntity> recurring = goalDao.findAll().stream()
+//                .filter(goal -> goal.isActive)
+//                .collect(Collectors.toList());
+//        return recurring.stream()
+//                .map(GoalEntity::toGoal)
+//                .collect(Collectors.toList());
+//    }
 }

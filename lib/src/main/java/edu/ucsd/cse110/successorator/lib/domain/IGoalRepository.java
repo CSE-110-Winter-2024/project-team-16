@@ -21,4 +21,8 @@ public interface IGoalRepository {
     void checkOff(int id);
 
     void deleteCrossedGoals();
+    List<Goal> getRecurringGoals();
+
+    void inActive(int id);
+    void active(int id);
 }

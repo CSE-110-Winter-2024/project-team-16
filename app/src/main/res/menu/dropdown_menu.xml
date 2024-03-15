@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/today"
+        android:title="today"/>
+    <item
+        android:id="@+id/tomorrow"
+        android:title="tomorrow"/>
+    <item
+        android:id="@+id/pending"
+        android:title="Pending"/>
+    <item
+        android:id="@+id/reccuring"
+        android:title="Reccuring"/>
+</menu>

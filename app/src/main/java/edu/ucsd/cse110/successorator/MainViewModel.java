@@ -59,12 +59,19 @@ public class MainViewModel extends ViewModel {
             if (goals == null)
                 return; // not ready yet, ignore, placeholder text should be displayed
 
-            var newOrderedGoals = goals.stream()
+//            var newOrderedGoals = goals.stream()
+//                    .sorted(Comparator.comparingInt(Goal::sortOrder))
+//                    .map(GoalEntity::fromGoal)
+//                    .collect(Collectors.toList());
+//            orderedGoals.setValue(newOrderedGoals);
+
+            var activeGoals = goals.stream()
+                    .filter(Goal::isActive)
                     .sorted(Comparator.comparingInt(Goal::sortOrder))
                     .map(GoalEntity::fromGoal)
                     .collect(Collectors.toList());
+            orderedGoals.setValue(activeGoals);
 
-            orderedGoals.setValue(newOrderedGoals);
         });
 
     }
@@ -84,4 +91,6 @@ public class MainViewModel extends ViewModel {
     public void checkOff(int id) {
         goalRepository.checkOff(id);
     }
+
+    public void inActive(int id) {goalRepository.inActive(id);}
 }

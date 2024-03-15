@@ -34,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mockedDate = getSharedPreferences("mockedDate", Context.MODE_PRIVATE);
-        setDate();
+        calendar = Calendar.getInstance();
+        formatDate(calendar);
         var view = ActivityMainBinding.inflate(getLayoutInflater(), null, false);
         //view.placeholderText.setText(R.string.empty_list_greeting);
 
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         //For dropdown menu
         else if (itemId == R.id.v_dropdown) {
-
+            dropDown();
         }
 
 //        else if(itemId == R.id.home) {
@@ -105,17 +106,17 @@ public class MainActivity extends AppCompatActivity {
         //dialogFragment.show(getParentFragmentManager(), "AddGoalDialogFragment");
     }
 
-    /**
-     * Set the title as the current date
-     *
-     * @author Yubing Lin
-     */
-    private void setDate() {
-        calendar = Calendar.getInstance();
-
-        //Format the date as "Weekday MM/DD"
-        formatDate(calendar);
-    }
+//    /**
+//     * Set the title as the current date
+//     *
+//     * @author Yubing Lin
+//     */
+//    private void setDate() {
+//        calendar = Calendar.getInstance();
+//
+//        //Format the date as "Weekday MM/DD"
+//        formatDate(calendar);
+//    }
 
     /**
      * Increment the title by one day
@@ -178,12 +179,37 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    private void dropDown(View view){
-        PopupMenu dropDown = new PopupMenu(this,view);
-        MenuInflater inflater = dropDown.getMenuInflater();
+    private void dropDown(){
+        View viewDrop = findViewById(R.id.v_dropdown);
+        PopupMenu dropDown = new PopupMenu(this,viewDrop);
+        dropDown.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener(){
+            @Override
+            public boolean onMenuItemClick(MenuItem item){
+                if (item.getItemId() == R.id.today){
 
-        inflater.inflate(R.menu.action_bar, dropDown.getMenu());
+                }
 
+                else if (item.getItemId() == R.id.tomorrow){
+                    return false;
+                }
+
+                else if (item.getItemId() == R.id.pending){
+                    return false;
+                }
+
+                else if (item.getItemId() == R.id.reccuring){
+                    return false;
+                }
+
+                else {
+                    return false;
+                }
+                return false;
+            }
+        });
+
+        dropDown.inflate(R.menu.dropdown_menu);
+        dropDown.show();
 
     }
 
