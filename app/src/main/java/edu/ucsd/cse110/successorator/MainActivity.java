@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
                     setModeTitle();
                     return false;
                 } else if (item.getItemId() == R.id.reccuring){
-                    sharedMode.edit().putString("mode", "Pending").apply();
+                    sharedMode.edit().putString("mode", "Recurring").apply();
                     setModeTitle();
                     return false;
                 }

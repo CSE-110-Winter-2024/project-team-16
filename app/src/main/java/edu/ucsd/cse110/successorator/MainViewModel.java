@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
@@ -39,6 +40,7 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
     // private final MutableSubject<Boolean> isCrossedOff;
     // private final MutableSubject<String> displayedText;
     private SharedPreferences sharedMode;
+    private List<Goal> currentGoals;
     List<GoalEntity> showGoals;
 
     public static final ViewModelInitializer<MainViewModel> initializer =
@@ -80,40 +82,41 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
                     .map(GoalEntity::fromGoal)
                     .collect(Collectors.toList());
 
-            orderedGoals.setValue(activeGoals);
+            currentGoals = new ArrayList<>(goals);
+            //orderedGoals.setValue(activeGoals);
+            updateShowGoals();
 
         });
+
 
     }
 
     public void updateShowGoals() {
         List<GoalEntity> showGoals;
-        goalRepository.append(new Goal(13, String.valueOf(goalRepository.count()), 3, false, Goal.Frequency.ONETIME, calendarToString(), Goal.GoalContext.HOME, true));
-        List<Goal> goals = goalRepository.findAll().getValue();
-        if (goals == null) return;
+        if (currentGoals == null) return;
         String mode = sharedMode.getString("mode", "Tod ");
         if (mode.equals("Tod ")) {
-            showGoals = goals.stream()
+            showGoals = currentGoals.stream()
                     .filter(Goal::isActive)
                     .sorted(Comparator.comparingInt(Goal::sortOrder))
                     .map(GoalEntity::fromGoal)
                     .collect(Collectors.toList());
         } else if (mode.equals("Tmr ")) {
-            showGoals = goals.stream()
+            showGoals = currentGoals.stream()
                     .filter(Goal::isActive)
                     .sorted(Comparator.comparingInt(Goal::sortOrder))
                     .map(GoalEntity::fromGoal)
                     .collect(Collectors.toList());
         } else if (mode.equals("Recurring")){
-            showGoals = goals.stream()
+            showGoals = currentGoals.stream()
                     .filter(goal -> goal.frequency() != Goal.Frequency.ONETIME &&
                             goal.frequency() != Goal.Frequency.PENDING)
                     .sorted(Comparator.comparingInt(Goal::sortOrder))
                     .map(GoalEntity::fromGoal)
                     .collect(Collectors.toList());
-
+            goalRepository.append(new Goal(13, "size "+showGoals.size(), 3, false, Goal.Frequency.ONETIME, calendarToString(), Goal.GoalContext.HOME, true));
         } else {
-            showGoals = goals.stream()
+            showGoals = currentGoals.stream()
                     .filter(goal -> goal.frequency() == Goal.Frequency.PENDING)
                     .sorted(Comparator.comparingInt(Goal::sortOrder))
                     .map(GoalEntity::fromGoal)
@@ -144,8 +147,6 @@ public class MainViewModel extends ViewModel implements SharedPreferences.OnShar
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals("mode")) {
             updateShowGoals();
-
-
         }
     }
 }
