@@ -29,13 +29,14 @@ import edu.ucsd.cse110.successorator.ui.dialog.AddGoalDialogFragment;
 public class MainActivity extends AppCompatActivity {
     private SharedPreferences mockedDate;
     public Calendar calendar;
+    private String mode = "Today ";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mockedDate = getSharedPreferences("mockedDate", Context.MODE_PRIVATE);
         calendar = Calendar.getInstance();
-        formatDate(calendar);
+        setModeTitle();
         var view = ActivityMainBinding.inflate(getLayoutInflater(), null, false);
         //view.placeholderText.setText(R.string.empty_list_greeting);
 
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         //For dropdown menu
         else if (itemId == R.id.v_dropdown) {
-
+            dropDown();
         }
 
 //        else if(itemId == R.id.home) {
@@ -125,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void incDate() {
         calendar.add(Calendar.DAY_OF_MONTH, 1);
-        formatDate(calendar);
+        setModeTitle();
     }
 
     /**
@@ -134,17 +135,25 @@ public class MainActivity extends AppCompatActivity {
      * @param calendar the date to be set as title
      * @author Yubing Lin
      */
-    private void formatDate(Calendar calendar) {
+    private String formatDate(Calendar calendar) {
         //From ChatGPT, formatting the date as designed pattern
         DateFormatSymbols dfs = new DateFormatSymbols();
         String[] weekdays = dfs.getWeekdays();
         String weekday = weekdays[calendar.get(Calendar.DAY_OF_WEEK)];
 
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
-        String formattedDate = weekday + " " + sdf.format(calendar.getTime());
-        setTitle(formattedDate);
+        String formattedDate = weekday.substring(0, 3) + " " + sdf.format(calendar.getTime());
 
         updateShared(calendar);
+        return formattedDate;
+    }
+
+    private void setModeTitle() {
+        if (mode.equals("Today ") || mode.equals("Tmr ")) {
+            setTitle(mode+formatDate(calendar));
+        } else {
+            setTitle(mode);
+        }
     }
 
     private void updateShared(Calendar calendar) {
@@ -154,36 +163,40 @@ public class MainActivity extends AppCompatActivity {
         mockedDate.edit().putString("mockedTime",dateString).apply();
     }
 
+    private void dropDown(){
+        View viewDrop = findViewById(R.id.v_dropdown);
+        PopupMenu dropDown = new PopupMenu(this,viewDrop);
+        dropDown.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener(){
+            @Override
+            public boolean onMenuItemClick(MenuItem item){
+                if (item.getItemId() == R.id.today){
+                }
 
-//    /**
-//     * Getter for testing
-//     *
-//     * @return the current localDate that is set as title
-//     * @author Yubing Lin
-//     */
-//    public LocalDate getLocalDate() {
-//        return localDate;
-//    }
-//
-//    /**
-//     * A public method calling incDate for testing
-//     *
-//     * @return the current localDate that is set as title
-//     * @author Yubing Lin
-//     */
-//    public LocalDate getIncDate() {
-//        incDate();
-//        return localDate;
-//    }
+                else if (item.getItemId() == R.id.tomorrow){
+                    mode = "Tmr ";
+                    setModeTitle();
+                    return false;
+                }
 
+                else if (item.getItemId() == R.id.pending){
+                    mode = "Pending";
+                    setModeTitle();
+                    return false;
+                } else if (item.getItemId() == R.id.reccuring){
+                    mode = "Recurring";
+                    setModeTitle();
+                    return false;
+                }
 
+                else {
+                    return false;
+                }
+                return false;
+            }
+        });
 
-
-    private void dropDown(View view){
-        PopupMenu dropDown = new PopupMenu(this,view);
-        MenuInflater inflater = dropDown.getMenuInflater();
-
-        inflater.inflate(R.menu.action_bar, dropDown.getMenu());
+        dropDown.inflate(R.menu.dropdown_menu);
+        dropDown.show();
 
 
     }
